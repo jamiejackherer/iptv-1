@@ -100,37 +100,37 @@ class BuildRequest(build_utils.BuildRequest):
         glib_version_short = version[:version.rfind('.')]
         url = '{0}/{1}/glib-{2}.{3}'.format(GLIB_SRC_ROOT, glib_version_short,
                                             version, GLIB_ARCH_EXT)
-        self._download_and_build_via_meson(url, [])
+        self._download_and_build_via_meson(url, ['--buildtype=release'])
 
     def build_glib_networking(self, version):
         glib_version_short = version[:version.rfind('.')]
         url = '{0}/{1}/glib-networking-{2}.{3}'.format(GLIB_NETWORKING_SRC_ROOT, glib_version_short,
                                                        version, GLIB_NETWORKING_ARCH_EXT)
-        self._download_and_build_via_meson(url, ['-Dopenssl=enabled'])
+        self._download_and_build_via_meson(url, ['--buildtype=release', '-Dopenssl=enabled'])
 
     def build_gstreamer(self, version):
         url = '{0}gstreamer/gstreamer-{1}.{2}'.format(GSTREAMER_SRC_ROOT, version, GSTREAMER_ARCH_EXT)
-        self._download_and_build_via_meson(url, [])
+        self._download_and_build_via_meson(url, ['--buildtype=release'])
 
     def build_gst_plugins_base(self, version):
         url = '{0}gst-plugins-base/gst-plugins-base-{1}.{2}'.format(GST_PLUGINS_BASE_SRC_ROOT, version,
                                                                     GST_PLUGINS_BASE_ARCH_EXT)
-        self._download_and_build_via_meson(url, [])
+        self._download_and_build_via_meson(url, ['--buildtype=release'])
 
     def build_gst_plugins_good(self, version):
         url = '{0}gst-plugins-good/gst-plugins-good-{1}.{2}'.format(GST_PLUGINS_GOOD_SRC_ROOT, version,
                                                                     GST_PLUGINS_GOOD_ARCH_EXT)
-        self._download_and_build_via_meson(url, [])
+        self._download_and_build_via_meson(url, ['--buildtype=release'])
 
     def build_gst_plugins_bad(self, version):
         url = '{0}gst-plugins-bad/gst-plugins-bad-{1}.{2}'.format(GST_PLUGINS_BAD_SRC_ROOT, version,
                                                                   GST_PLUGINS_BAD_ARCH_EXT)
-        self._download_and_build_via_meson(url, [])
+        self._download_and_build_via_meson(url, ['--buildtype=release'])
 
     def build_gst_plugins_ugly(self, version):
         url = '{0}gst-plugins-ugly/gst-plugins-ugly-{1}.{2}'.format(GST_PLUGINS_UGLY_SRC_ROOT, version,
                                                                     GST_PLUGINS_UGLY_ARCH_EXT)
-        self._download_and_build_via_meson(url, [])
+        self._download_and_build_via_meson(url, ['--buildtype=release'])
 
     def build_gst_libav(self, version):
         compiler_flags = []
