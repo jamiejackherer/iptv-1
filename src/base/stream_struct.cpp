@@ -1,0 +1,111 @@
+/*  Copyright (C) 2014-2019 FastoGT. All right reserved.
+    This file is part of iptv_cloud.
+    iptv_cloud is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    iptv_cloud is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "base/stream_struct.h"
+
+#include <string>
+
+#include <common/time.h>
+
+#include "base/channel_stats.h"
+
+namespace common {
+
+std::string ConvertToString(iptv_cloud::StreamStatus st) {
+  static const std::string kStreamStatuses[] = {
+      "New", "Inited", "Started", "Ready", "Streaming", "Frozen", "Waiting",
+  };
+
+  return kStreamStatuses[st];
+}
+
+}  // namespace common
+
+namespace iptv_cloud {
+
+namespace {
+output_channels_info_t make_outputs(const std::vector<channel_id_t>& output) {
+  output_channels_info_t res;
+  for (auto out : output) {
+    res.push_back(new ChannelStats(out));
+  }
+  return res;
+}
+
+input_channels_info_t make_inputs(const std::vector<channel_id_t>& input) {
+  input_channels_info_t res;
+  for (auto in : input) {
+    res.push_back(new ChannelStats(in));
+  }
+  return res;
+}
+}  // namespace
+
+StreamStruct::StreamStruct() : StreamStruct(StreamInfo()) {}
+
+StreamStruct::StreamStruct(const StreamInfo& sha) : StreamStruct(sha, common::time::current_mstime() / 1000, 0, 0) {}
+
+StreamStruct::StreamStruct(const StreamInfo& sha, time_t start_time, time_t lst, size_t rest)
+    : StreamStruct(sha.id, sha.type, NEW, make_inputs(sha.input), make_outputs(sha.output), start_time, lst, rest) {}
+
+StreamStruct::StreamStruct(stream_id_t sid,
+                           StreamType type,
+                           StreamStatus status,
+                           input_channels_info_t input,
+                           output_channels_info_t output,
+                           time_t start_time,
+                           time_t lst,
+                           size_t rest)
+    : id(sid),
+      type(type),
+      start_time(start_time),
+      loop_start_time(lst),
+      restarts(rest),
+      status(status),
+      input(input),
+      output(output) {}
+
+bool StreamStruct::IsValid() const {
+  return !id.empty();
+}
+
+StreamStruct::~StreamStruct() {
+  for (size_t i = 0; i < output.size(); ++i) {
+    delete output[i];
+  }
+
+  for (size_t i = 0; i < input.size(); ++i) {
+    delete input[i];
+  }
+}
+
+time_t StreamStruct::WithoutRestartTime() const {
+  const time_t current_time = common::time::current_mstime() / 1000;
+  if (!loop_start_time) {
+    return 0;
+  }
+
+  return current_time - loop_start_time;
+}
+
+void StreamStruct::ResetDataWait() {
+  for (size_t i = 0; i < input.size(); ++i) {
+    input[i]->UpdateCheckPoint();
+  }
+  for (size_t i = 0; i < output.size(); ++i) {
+    output[i]->UpdateCheckPoint();
+  }
+}
+
+}  // namespace iptv_cloud

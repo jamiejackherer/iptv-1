@@ -1,0 +1,7 @@
+version: '2.1'
+
+services:
+  github-release:
+    image: buildkite/github-release
+    build: .
+

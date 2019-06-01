@@ -1,0 +1,30 @@
+1.3.1 / May 28, 2019
+[Alexandr Topilski]
+- Stabilization
+- Avformat streams
+
+1.3.0 / May 26, 2019
+[Alexandr Topilski]
+- HostAndPort in config
+- Config file for service
+- Http server
+- Vods server
+- Compress connection
+
+1.2.0 / February 1, 2019
+[Alexandr Topilski]
+- Stabilization
+- Get logs
+
+1.1.0 / January 25, 2019
+[Alexandr Topilski]
+- Docker image
+- Relay/Encode/Timeshifts check fields
+- Get service/stream log command
+
+1.0.0 / January 14, 2019
+[Alexandr Topilski]
+- Fixed timeshift recorder
+- Stream library
+- Project modules
+- Tcp communication
