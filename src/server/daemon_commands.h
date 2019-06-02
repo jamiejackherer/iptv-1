@@ -16,7 +16,7 @@
 
 #include <string>
 
-#include "protocol/protocol.h"
+#include "protocol/types.h"
 
 // daemon
 // client commands

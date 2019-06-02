@@ -17,6 +17,7 @@
 #include <common/libev/io_child.h>
 
 #include "protocol/protocol.h"
+#include "protocol/types.h"
 
 #include "base/types.h"
 
