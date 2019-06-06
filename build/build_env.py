@@ -66,10 +66,9 @@ class BuildRequest(build_utils.BuildRequest):
                             'libmount-dev', 'libdrm-dev', 'libsoup2.4-dev', 'libudev-dev', 'libjpeg-dev',
                             'freeglut3-dev',
                             'libegl1-mesa-dev',
-                            'zlib1g-dev', 'libffi-dev', 'yasm', 'bison', 'flex', 'libxrandr-dev', 'libfaac-dev',
+                            'zlib1g-dev', 'libffi-dev', 'yasm', 'bison', 'flex', 'libxrandr-dev',
                             'libfaad-dev',
                             'ninja-build', 'intltool', 'liborc-0.4-dev', 'libxml2-dev', 'libx264-dev',
-                            'glib-networking',
                             'libmp3lame-dev', 'librtmp-dev', 'gsettings-desktop-schemas-dev', 'libproxy-dev']
             elif distribution == 'RHEL':
                 dep_libs = ['gcc', 'gcc-c++', 'git', 'make', 'cmake', 'autoconf', 'libtool', 'cairo-gobject-devel',
