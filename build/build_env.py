@@ -43,10 +43,6 @@ GLIB_NETWORKING_SRC_ROOT = "https://ftp.gnome.org/pub/GNOME/sources/glib-network
 GLIB_NETWORKING_ARCH_COMP = "xz"
 GLIB_NETWORKING_ARCH_EXT = "tar." + GLIB_NETWORKING_ARCH_COMP
 
-FAAC_SRC_ROOT = 'https://github.com/knik0/faac/archive/'
-FAAC_ARCH_COMP = "gz"
-FAAC_ARCH_EXT = "tar." + FAAC_ARCH_COMP
-
 
 class BuildRequest(build_utils.BuildRequest):
     def __init__(self, platform, arch_name, dir_path, prefix_path):
@@ -67,7 +63,7 @@ class BuildRequest(build_utils.BuildRequest):
                             'freeglut3-dev',
                             'libegl1-mesa-dev',
                             'zlib1g-dev', 'libffi-dev', 'yasm', 'bison', 'flex', 'libxrandr-dev',
-                            'libfaad-dev',
+                            'libfaac-dev', 'libfaad-dev',
                             'ninja-build', 'intltool', 'liborc-0.4-dev', 'libxml2-dev', 'libx264-dev',
                             'libmp3lame-dev', 'librtmp-dev', 'libproxy-dev']
             elif distribution == 'RHEL':
@@ -111,12 +107,6 @@ class BuildRequest(build_utils.BuildRequest):
                                                        version, GLIB_NETWORKING_ARCH_EXT)
         self._download_and_build_via_meson(url, ['--buildtype=release', '-Dopenssl=enabled'])
 
-    def build_faac(self, version):
-        compiler_flags = []
-        version_without_dot = version.replace('.', '_')
-        url = '{0}/{1}.{2}'.format(FAAC_SRC_ROOT, version_without_dot, FAAC_ARCH_EXT)
-        self._download_and_build_via_bootstrap(url, compiler_flags)
-
     def build_gstreamer(self, version):
         url = '{0}gstreamer/gstreamer-{1}.{2}'.format(GSTREAMER_SRC_ROOT, version, GSTREAMER_ARCH_EXT)
         self._download_and_build_via_meson(url, ['--buildtype=release'])
@@ -151,7 +141,6 @@ if __name__ == "__main__":
     openssl_default_version = '1.1.1b'
     glib_default_version = '2.60.2'
     meson_default_version = '0.50.1'
-    faac_default_version = '1.29.9'
     gstreamer_default_version = '1.16.0'
     gst_plugins_base_default_version = gstreamer_default_version
     gst_plugins_good_default_version = gstreamer_default_version
@@ -233,15 +222,6 @@ if __name__ == "__main__":
                              default=False)
     parser.add_argument('--openssl-version', help='openssl version (default: {0})'.format(openssl_default_version),
                         default=openssl_default_version)
-
-    # faac
-    faac_grp = parser.add_mutually_exclusive_group()
-    faac_grp.add_argument('--with-faac', help='build faac (default, version:{0})'.format(faac_default_version),
-                          dest='with_faac', action='store_true', default=True)
-    faac_grp.add_argument('--without-faac', help='build without faac', dest='with_faac', action='store_false',
-                          default=False)
-    parser.add_argument('--faac-version', help='faac version (default: {0})'.format(faac_default_version),
-                        default=faac_default_version)
 
     # gstreamer
     gstreamer_grp = parser.add_mutually_exclusive_group()
@@ -357,8 +337,6 @@ if __name__ == "__main__":
         request.build_glib(argv.glib_version)
     if argv.with_glib_networking:
         request.build_glib_networking(argv.glib_version)
-    if argv.with_faac:
-        request.build_faac(argv.faac_version)
 
     if argv.with_gstreamer:
         request.build_gstreamer(argv.gstreamer_version)
