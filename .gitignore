@@ -42,3 +42,4 @@ build/build_*_env/
 build_cmake/
 build_cmake_release/
 clients/.idea
+.idea
