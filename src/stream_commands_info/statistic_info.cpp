@@ -38,12 +38,12 @@ StatisticInfo::StatisticInfo() : stream_struct_(), cpu_load_(), rss_(), timestam
 StatisticInfo::StatisticInfo(const StreamStruct& str, cpu_load_t cpu_load, rss_t rss, time_t time)
     : stream_struct_(), cpu_load_(cpu_load), rss_(rss), timestamp_(time) {
   input_channels_info_t input;
-  for (auto it = str.input.rbegin(); it != str.input.rend(); ++it) {
+  for (auto it = str.input.begin(); it != str.input.end(); ++it) {
     ChannelStats copy = *(*it);
     input.push_back(new ChannelStats(copy));
   }
   output_channels_info_t output;
-  for (auto it = str.output.rbegin(); it != str.output.rend(); ++it) {
+  for (auto it = str.output.begin(); it != str.output.end(); ++it) {
     ChannelStats copy = *(*it);
     output.push_back(new ChannelStats(copy));
   }

@@ -198,10 +198,10 @@ CpuShot GetMachineCpuShot() {
   return res;
 }
 
-MemoryShot::MemoryShot() : total_ram(0), free_ram(0), avail_ram(0) {}
+MemoryShot::MemoryShot() : total_bytes_ram(0), free_bytes_ram(0), avail_bytes_ram(0) {}
 
 long double MemoryShot::GetAvailable() const {
-  return static_cast<long double>(avail_ram) / static_cast<long double>(total_ram);
+  return static_cast<long double>(avail_bytes_ram) / static_cast<long double>(total_bytes_ram);
 }
 
 MemoryShot GetMachineMemoryShot() {
@@ -211,19 +211,25 @@ MemoryShot GetMachineMemoryShot() {
   }
 
   char line[256];
-  MemoryShot shot;
+  uint64_t total_ram = 0;
+  uint64_t free_ram = 0;
+  uint64_t avail_ram = 0;
   while (fgets(line, sizeof(line), meminfo)) {
-    if (sscanf(line, "MemTotal: %lu kB", &shot.total_ram) == 1) {
-    } else if (sscanf(line, "MemFree: %lu kB", &shot.free_ram) == 1) {
-    } else if (sscanf(line, "MemAvailable: %lu kB", &shot.avail_ram) == 1) {
+    if (sscanf(line, "MemTotal: %lu kB", &total_ram) == 1) {
+    } else if (sscanf(line, "MemFree: %lu kB", &free_ram) == 1) {
+    } else if (sscanf(line, "MemAvailable: %lu kB", &avail_ram) == 1) {
     }
   }
 
+  MemoryShot shot;
+  shot.total_bytes_ram = total_ram * 1024;
+  shot.free_bytes_ram = free_ram * 1024;
+  shot.avail_bytes_ram = avail_ram * 1024;
   fclose(meminfo);
   return shot;
 }
 
-HddShot::HddShot() : hdd_total(0), hdd_free(0) {}
+HddShot::HddShot() : hdd_bytes_total(0), hdd_bytes_free(0) {}
 
 HddShot GetMachineHddShot() {
   struct statvfs fi_data;
@@ -233,8 +239,8 @@ HddShot GetMachineHddShot() {
   }
 
   HddShot sh;
-  sh.hdd_total = fi_data.f_blocks * fi_data.f_bsize / 1024;
-  sh.hdd_free = fi_data.f_bfree * fi_data.f_bsize / 1024;
+  sh.hdd_bytes_total = fi_data.f_blocks * fi_data.f_bsize;
+  sh.hdd_bytes_free = fi_data.f_bfree * fi_data.f_bsize;
   return sh;
 }
 

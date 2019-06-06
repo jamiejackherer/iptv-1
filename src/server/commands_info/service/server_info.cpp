@@ -74,12 +74,14 @@ common::Error ServerInfo::SerializeFields(json_object* out) const {
   json_object_object_add(out, STATISTIC_SERVICE_INFO_CPU_FIELD, json_object_new_int(cpu_load_));
   json_object_object_add(out, STATISTIC_SERVICE_INFO_GPU_FIELD, json_object_new_int(gpu_load_));
   json_object_object_add(out, STATISTIC_SERVICE_INFO_LOAD_AVERAGE_FIELD, json_object_new_string(uptime_.c_str()));
-  json_object_object_add(out, STATISTIC_SERVICE_INFO_MEMORY_TOTAL_FIELD, json_object_new_int64(mem_shot_.total_ram));
-  json_object_object_add(out, STATISTIC_SERVICE_INFO_MEMORY_FREE_FIELD, json_object_new_int64(mem_shot_.free_ram));
+  json_object_object_add(out, STATISTIC_SERVICE_INFO_MEMORY_TOTAL_FIELD,
+                         json_object_new_int64(mem_shot_.total_bytes_ram));
+  json_object_object_add(out, STATISTIC_SERVICE_INFO_MEMORY_FREE_FIELD,
+                         json_object_new_int64(mem_shot_.free_bytes_ram));
   json_object_object_add(out, STATISTIC_SERVICE_INFO_MEMORY_AVAILABLE_FIELD,
-                         json_object_new_int64(mem_shot_.avail_ram));
-  json_object_object_add(out, STATISTIC_SERVICE_INFO_HDD_TOTAL_FIELD, json_object_new_int64(hdd_shot_.hdd_total));
-  json_object_object_add(out, STATISTIC_SERVICE_INFO_HDD_FREE_FIELD, json_object_new_int64(hdd_shot_.hdd_free));
+                         json_object_new_int64(mem_shot_.avail_bytes_ram));
+  json_object_object_add(out, STATISTIC_SERVICE_INFO_HDD_TOTAL_FIELD, json_object_new_int64(hdd_shot_.hdd_bytes_total));
+  json_object_object_add(out, STATISTIC_SERVICE_INFO_HDD_FREE_FIELD, json_object_new_int64(hdd_shot_.hdd_bytes_free));
   json_object_object_add(out, STATISTIC_SERVICE_INFO_BANDWIDTH_IN_FIELD, json_object_new_int64(net_bytes_recv_));
   json_object_object_add(out, STATISTIC_SERVICE_INFO_BANDWIDTH_OUT_FIELD, json_object_new_int64(net_bytes_send_));
   json_object_object_add(out, STATISTIC_SERVICE_INFO_UPTIME_FIELD, json_object_new_int64(sys_shot_.uptime));
@@ -112,34 +114,34 @@ common::Error ServerInfo::DoDeSerialize(json_object* serialized) {
   json_bool jmemory_total_exists =
       json_object_object_get_ex(serialized, STATISTIC_SERVICE_INFO_MEMORY_TOTAL_FIELD, &jmemory_total);
   if (jmemory_total_exists) {
-    inf.mem_shot_.total_ram = json_object_get_int64(jmemory_total);
+    inf.mem_shot_.total_bytes_ram = json_object_get_int64(jmemory_total);
   }
 
   json_object* jmemory_free = nullptr;
   json_bool jmemory_free_exists =
       json_object_object_get_ex(serialized, STATISTIC_SERVICE_INFO_MEMORY_FREE_FIELD, &jmemory_free);
   if (jmemory_free_exists) {
-    inf.mem_shot_.free_ram = json_object_get_int64(jmemory_free);
+    inf.mem_shot_.free_bytes_ram = json_object_get_int64(jmemory_free);
   }
 
   json_object* jmemory_avail = nullptr;
   json_bool jmemory_avail_exists =
       json_object_object_get_ex(serialized, STATISTIC_SERVICE_INFO_MEMORY_AVAILABLE_FIELD, &jmemory_avail);
   if (jmemory_avail_exists) {
-    inf.mem_shot_.avail_ram = json_object_get_int64(jmemory_avail);
+    inf.mem_shot_.avail_bytes_ram = json_object_get_int64(jmemory_avail);
   }
 
   json_object* jhdd_total = nullptr;
   json_bool jhdd_total_exists =
       json_object_object_get_ex(serialized, STATISTIC_SERVICE_INFO_HDD_TOTAL_FIELD, &jhdd_total);
   if (jhdd_total_exists) {
-    inf.hdd_shot_.hdd_total = json_object_get_int64(jhdd_total);
+    inf.hdd_shot_.hdd_bytes_total = json_object_get_int64(jhdd_total);
   }
 
   json_object* jhdd_free = nullptr;
   json_bool jhdd_free_exists = json_object_object_get_ex(serialized, STATISTIC_SERVICE_INFO_HDD_FREE_FIELD, &jhdd_free);
   if (jhdd_free_exists) {
-    inf.hdd_shot_.hdd_free = json_object_get_int64(jhdd_free);
+    inf.hdd_shot_.hdd_bytes_free = json_object_get_int64(jhdd_free);
   }
 
   json_object* jnet_bytes_recv = nullptr;
