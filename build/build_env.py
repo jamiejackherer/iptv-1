@@ -61,7 +61,7 @@ class BuildRequest(build_utils.BuildRequest):
             distribution = system_info.linux_get_dist()
             if distribution == 'DEBIAN':
                 dep_libs = ['gcc', 'g++', 'git', 'make', 'cmake', 'autoconf', 'libtool', 'pkg-config', 'gettext',
-                            'libssl-dev', 'python3',
+                            'python3',
                             'libcairo2-dev',
                             'libmount-dev', 'libdrm-dev', 'libsoup2.4-dev', 'libudev-dev', 'libjpeg-dev',
                             'freeglut3-dev',
