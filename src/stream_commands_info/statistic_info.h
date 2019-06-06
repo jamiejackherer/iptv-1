@@ -14,8 +14,6 @@
 
 #pragma once
 
-#include <memory>
-
 #include <common/serializer/json_serializer.h>
 
 #include "base/stream_struct.h"
@@ -27,7 +25,7 @@ class StatisticInfo : public common::serializer::JsonSerializer<StatisticInfo> {
   typedef JsonSerializer<StatisticInfo> base_class;
   typedef double cpu_load_t;
   typedef long rss_t;
-  typedef std::shared_ptr<StreamStruct> stream_struct_t;
+  typedef StreamStruct stream_struct_t;
 
   StatisticInfo();
   StatisticInfo(const StreamStruct& str, cpu_load_t cpu_load, rss_t rss, time_t time);

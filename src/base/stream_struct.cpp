@@ -38,7 +38,7 @@ namespace {
 output_channels_info_t make_outputs(const std::vector<channel_id_t>& output) {
   output_channels_info_t res;
   for (auto out : output) {
-    res.push_back(new ChannelStats(out));
+    res.push_back(ChannelStats(out));
   }
   return res;
 }
@@ -46,7 +46,7 @@ output_channels_info_t make_outputs(const std::vector<channel_id_t>& output) {
 input_channels_info_t make_inputs(const std::vector<channel_id_t>& input) {
   input_channels_info_t res;
   for (auto in : input) {
-    res.push_back(new ChannelStats(in));
+    res.push_back(ChannelStats(in));
   }
   return res;
 }
@@ -80,15 +80,7 @@ bool StreamStruct::IsValid() const {
   return !id.empty();
 }
 
-StreamStruct::~StreamStruct() {
-  for (size_t i = 0; i < output.size(); ++i) {
-    delete output[i];
-  }
-
-  for (size_t i = 0; i < input.size(); ++i) {
-    delete input[i];
-  }
-}
+StreamStruct::~StreamStruct() {}
 
 time_t StreamStruct::WithoutRestartTime() const {
   const time_t current_time = common::time::current_mstime() / 1000;
@@ -101,10 +93,10 @@ time_t StreamStruct::WithoutRestartTime() const {
 
 void StreamStruct::ResetDataWait() {
   for (size_t i = 0; i < input.size(); ++i) {
-    input[i]->UpdateCheckPoint();
+    input[i].UpdateCheckPoint();
   }
   for (size_t i = 0; i < output.size(); ++i) {
-    output[i]->UpdateCheckPoint();
+    output[i].UpdateCheckPoint();
   }
 }
 

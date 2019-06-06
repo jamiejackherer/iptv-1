@@ -20,15 +20,14 @@
 #include <common/macros.h>
 
 #include "base/types.h"
+#include "base/channel_stats.h"
 
 namespace iptv_cloud {
 
 enum StreamStatus { NEW = 0, INIT = 1, STARTED = 2, READY = 3, PLAYING = 4, FROZEN = 5, WAITING = 6 };
 
-class ChannelStats;
-
-typedef std::vector<ChannelStats*> input_channels_info_t;
-typedef std::vector<ChannelStats*> output_channels_info_t;
+typedef std::vector<ChannelStats> input_channels_info_t;
+typedef std::vector<ChannelStats> output_channels_info_t;
 
 struct StreamInfo {
   stream_id_t id;
@@ -58,20 +57,17 @@ struct StreamStruct {
 
   void ResetDataWait();
 
-  const stream_id_t id;
-  const StreamType type;
+  stream_id_t id;
+  StreamType type;
 
-  const time_t start_time;  // sec
+  time_t start_time;  // sec
 
   time_t loop_start_time;
   size_t restarts;
   StreamStatus status;
 
-  const input_channels_info_t input;    // ptrs
-  const output_channels_info_t output;  // ptrs
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StreamStruct);
+  input_channels_info_t input;
+  output_channels_info_t output;
 };
 
 }  // namespace iptv_cloud

@@ -373,10 +373,9 @@ void IBaseStream::RegisterAudioCaps(SupportedAudioCodec saudio, GstCaps* caps, e
     gint rate = 0, channels = 0;
     if (gst_structure_get_int(pad_struct, "rate", &rate) && gst_structure_get_int(pad_struct, "channels", &channels)) {
       common::media::DesireBytesPerSec kbps = common::media::CalculateDesireAudioBandwidthBytesPerSec(rate, channels);
-      input_channels_info_t ins = stats_->input;
-      common::media::DesireBytesPerSec prev = ins[id]->GetDesireBytesPerSecond();
+      common::media::DesireBytesPerSec prev = stats_->input[id].GetDesireBytesPerSecond();
       common::media::DesireBytesPerSec next = prev + kbps;
-      ins[id]->SetDesireBytesPerSecond(next);
+      stats_->input[id].SetDesireBytesPerSecond(next);
       desire_flags_ |= INITED_AUDIO;
     }
   }
@@ -395,9 +394,8 @@ void IBaseStream::RegisterVideoCaps(SupportedVideoCodec svideo, GstCaps* caps, e
       gint height = 0;
       if (gst_structure_get_int(pad_struct, "width", &width) && gst_structure_get_int(pad_struct, "height", &height)) {
         common::media::DesireBytesPerSec kbps = common::media::CalculateDesireMPEGBandwidthBytesPerSec(width, height);
-        input_channels_info_t ins = stats_->input;
-        common::media::DesireBytesPerSec prev = ins[id]->GetDesireBytesPerSecond();
-        ins[id]->SetDesireBytesPerSecond(prev + kbps);
+        common::media::DesireBytesPerSec prev = stats_->input[id].GetDesireBytesPerSecond();
+        stats_->input[id].SetDesireBytesPerSecond(prev + kbps);
         desire_flags_ |= INITED_VIDEO;
       }
     }
@@ -419,9 +417,8 @@ void IBaseStream::RegisterVideoCaps(SupportedVideoCodec svideo, GstCaps* caps, e
 
         common::media::DesireBytesPerSec kbps =
             common::media::CalculateDesireH264BandwidthBytesPerSec(width, height, framerate, profile);
-        input_channels_info_t ins = stats_->input;
-        common::media::DesireBytesPerSec prev = ins[id]->GetDesireBytesPerSecond();
-        ins[id]->SetDesireBytesPerSecond(prev + kbps);
+        common::media::DesireBytesPerSec prev = stats_->input[id].GetDesireBytesPerSecond();
+        stats_->input[id].SetDesireBytesPerSecond(prev + kbps);
         desire_flags_ |= INITED_VIDEO;
       }
     }
@@ -561,21 +558,19 @@ gboolean IBaseStream::HandleMainTimerTick() {
 
   size_t checkpoint_diff_in_total = 0;
   common::media::DesireBytesPerSec checkpoint_desire_in_total;
-  input_channels_info_t in = stats_->input;
-  size_t input_stream_count = in.size();
+  size_t input_stream_count = stats_->input.size();
   for (size_t i = 0; i < input_stream_count; ++i) {
-    size_t checkpoint_diff_out_stream = in[i]->GetDiffTotalBytes();
-    in[i]->UpdateBps(diff);
+    size_t checkpoint_diff_out_stream = stats_->input[i].GetDiffTotalBytes();
+    stats_->input[i].UpdateBps(diff);
     checkpoint_diff_in_total += checkpoint_diff_out_stream;
-    checkpoint_desire_in_total += in[i]->GetDesireBytesPerSecond();
+    checkpoint_desire_in_total += stats_->input[i].GetDesireBytesPerSecond();
   }
 
   size_t checkpoint_diff_out_total = 0;
-  output_channels_info_t out = stats_->output;
-  size_t output_stream_count = out.size();
+  size_t output_stream_count = stats_->output.size();
   for (size_t i = 0; i < output_stream_count; ++i) {
-    size_t checkpoint_diff_out_stream = out[i]->GetDiffTotalBytes();
-    out[i]->UpdateBps(diff);
+    size_t checkpoint_diff_out_stream = stats_->output[i].GetDiffTotalBytes();
+    stats_->output[i].UpdateBps(diff);
     checkpoint_diff_out_total += checkpoint_diff_out_stream;
   }
 
@@ -751,18 +746,14 @@ gboolean IBaseStream::main_timer_callback(gpointer user_data) {
 
 void IBaseStream::UpdateStats(const Probe* probe, gsize size) {
   if (probe->GetName() == PROBE_IN) {
-    input_channels_info_t ins = stats_->input;
-    if (probe->GetID() < ins.size()) {
-      ChannelStats* cahnnel_info = ins[probe->GetID()];
-      const size_t prev_total = cahnnel_info->GetTotalBytes();
-      cahnnel_info->SetTotalBytes(prev_total + size);
+    if (probe->GetID() < stats_->input.size()) {
+      const size_t prev_total = stats_->input[probe->GetID()].GetTotalBytes();
+      stats_->input[probe->GetID()].SetTotalBytes(prev_total + size);
     }
   } else if (probe->GetName() == PROBE_OUT) {
-    output_channels_info_t outs = stats_->output;
-    if (probe->GetID() < outs.size()) {
-      ChannelStats* cahnnel_info = outs[probe->GetID()];
-      const size_t prev_total = cahnnel_info->GetTotalBytes();
-      cahnnel_info->SetTotalBytes(prev_total + size);
+    if (probe->GetID() < stats_->output.size()) {
+      const size_t prev_total = stats_->output[probe->GetID()].GetTotalBytes();
+      stats_->output[probe->GetID()].SetTotalBytes(prev_total + size);
     }
   }
 }

@@ -36,21 +36,7 @@ namespace iptv_cloud {
 StatisticInfo::StatisticInfo() : stream_struct_(), cpu_load_(), rss_(), timestamp_() {}
 
 StatisticInfo::StatisticInfo(const StreamStruct& str, cpu_load_t cpu_load, rss_t rss, time_t time)
-    : stream_struct_(), cpu_load_(cpu_load), rss_(rss), timestamp_(time) {
-  input_channels_info_t input;
-  for (auto it = str.input.begin(); it != str.input.end(); ++it) {
-    ChannelStats copy = *(*it);
-    input.push_back(new ChannelStats(copy));
-  }
-  output_channels_info_t output;
-  for (auto it = str.output.begin(); it != str.output.end(); ++it) {
-    ChannelStats copy = *(*it);
-    output.push_back(new ChannelStats(copy));
-  }
-  StreamStruct* struc =
-      new StreamStruct(str.id, str.type, str.status, input, output, str.start_time, str.loop_start_time, str.restarts);
-  stream_struct_.reset(struc);
-
+    : stream_struct_(str), cpu_load_(cpu_load), rss_(rss), timestamp_(time) {
   /*cpu_load_t cpu_load = cpu_load_;
   if (isnan(cpu_load_) || isinf(cpu_load_)) {
     cpu_load = 0.0;
@@ -74,19 +60,19 @@ time_t StatisticInfo::GetTimestamp() const {
 }
 
 common::Error StatisticInfo::SerializeFields(json_object* out) const {
-  if (!stream_struct_ || !stream_struct_->IsValid()) {
+  if (!stream_struct_.IsValid()) {
     return common::make_error_inval();
   }
 
-  const auto channel_id = stream_struct_->id;
+  const auto channel_id = stream_struct_.id;
   json_object_object_add(out, FIELD_STREAM_ID, json_object_new_string(channel_id.c_str()));
-  json_object_object_add(out, FIELD_STREAM_TYPE, json_object_new_int(stream_struct_->type));
+  json_object_object_add(out, FIELD_STREAM_TYPE, json_object_new_int(stream_struct_.type));
 
-  input_channels_info_t input_streams = stream_struct_->input;
+  input_channels_info_t input_streams = stream_struct_.input;
   json_object* jinput_streams = json_object_new_array();
-  for (ChannelStats* inf : input_streams) {
+  for (auto inf : input_streams) {
     json_object* jinf = nullptr;
-    details::ChannelStatsInfo sinf(*inf);
+    details::ChannelStatsInfo sinf(inf);
     common::Error err = sinf.Serialize(&jinf);
     if (err) {
       continue;
@@ -95,11 +81,11 @@ common::Error StatisticInfo::SerializeFields(json_object* out) const {
   }
   json_object_object_add(out, FIELD_STREAM_INPUT_STREAMS, jinput_streams);
 
-  output_channels_info_t output_streams = stream_struct_->output;
+  output_channels_info_t output_streams = stream_struct_.output;
   json_object* joutput_streams = json_object_new_array();
-  for (ChannelStats* inf : output_streams) {
+  for (auto inf : output_streams) {
     json_object* jinf = nullptr;
-    details::ChannelStatsInfo sinf(*inf);
+    details::ChannelStatsInfo sinf(inf);
     common::Error err = sinf.Serialize(&jinf);
     if (err) {
       continue;
@@ -108,12 +94,12 @@ common::Error StatisticInfo::SerializeFields(json_object* out) const {
   }
   json_object_object_add(out, FIELD_STREAM_OUTPUT_STREAMS, joutput_streams);
 
-  json_object_object_add(out, FIELD_STREAM_LOOP_START_TIME, json_object_new_int64(stream_struct_->loop_start_time));
+  json_object_object_add(out, FIELD_STREAM_LOOP_START_TIME, json_object_new_int64(stream_struct_.loop_start_time));
   json_object_object_add(out, FIELD_STREAM_RSS, json_object_new_int64(rss_));
   json_object_object_add(out, FIELD_STREAM_CPU, json_object_new_double(cpu_load_));
-  json_object_object_add(out, FIELD_STREAM_STATUS, json_object_new_int(stream_struct_->status));
-  json_object_object_add(out, FIELD_STREAM_RESTARTS, json_object_new_int64(stream_struct_->restarts));
-  json_object_object_add(out, FIELD_STREAM_START_TIME, json_object_new_int(stream_struct_->start_time));
+  json_object_object_add(out, FIELD_STREAM_STATUS, json_object_new_int(stream_struct_.status));
+  json_object_object_add(out, FIELD_STREAM_RESTARTS, json_object_new_int64(stream_struct_.restarts));
+  json_object_object_add(out, FIELD_STREAM_START_TIME, json_object_new_int(stream_struct_.start_time));
   json_object_object_add(out, FIELD_STREAM_TIMESTAMP, json_object_new_int64(timestamp_));
   return common::Error();
 }
@@ -146,7 +132,7 @@ common::Error StatisticInfo::DoDeSerialize(json_object* serialized) {
         continue;
       }
 
-      input.push_back(new ChannelStats(sinf.GetChannelStats()));
+      input.push_back(ChannelStats(sinf.GetChannelStats()));
     }
   }
 
@@ -163,7 +149,7 @@ common::Error StatisticInfo::DoDeSerialize(json_object* serialized) {
         continue;
       }
 
-      output.push_back(new ChannelStats(sinf.GetChannelStats()));
+      output.push_back(ChannelStats(sinf.GetChannelStats()));
     }
   }
 
