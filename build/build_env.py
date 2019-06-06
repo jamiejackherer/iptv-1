@@ -69,14 +69,14 @@ class BuildRequest(build_utils.BuildRequest):
                             'zlib1g-dev', 'libffi-dev', 'yasm', 'bison', 'flex', 'libxrandr-dev',
                             'libfaad-dev',
                             'ninja-build', 'intltool', 'liborc-0.4-dev', 'libxml2-dev', 'libx264-dev',
-                            'libmp3lame-dev', 'librtmp-dev', 'gsettings-desktop-schemas-dev', 'libproxy-dev']
+                            'libmp3lame-dev', 'librtmp-dev', 'libproxy-dev']
             elif distribution == 'RHEL':
                 dep_libs = ['gcc', 'gcc-c++', 'git', 'make', 'cmake', 'autoconf', 'libtool', 'cairo-gobject-devel',
                             'libmount-devel', 'python3',
                             'libpciaccess-devel', 'libxcb-devel', 'libdrm-devel', 'libsoup-devel', 'libx264-devel',
                             'libudev-devel', 'libjpeg-turbo-devel', 'zlib-devel', 'libffi-devel', 'pcre-devel', 'yasm',
                             'bison', 'flex', 'alsa-lib-devel', 'ninja-build', 'patch', 'lame-devel', 'librtmp-devel',
-                            'gsettings-desktop-schemas-devel', 'libproxy-devel']
+                            'libproxy-devel']
         else:
             raise NotImplemented("Unknown platform '%s'" % platform_name)
 
