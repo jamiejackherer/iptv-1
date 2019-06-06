@@ -33,17 +33,17 @@
 
 namespace iptv_cloud {
 
-StatisticInfo::StatisticInfo() : stream_struct_(), cpu_load_(), rss_(), timestamp_() {}
+StatisticInfo::StatisticInfo() : stream_struct_(), cpu_load_(), rss_bytes_(), timestamp_() {}
 
-StatisticInfo::StatisticInfo(const StreamStruct& str, cpu_load_t cpu_load, rss_t rss, time_t time)
-    : stream_struct_(str), cpu_load_(cpu_load), rss_(rss), timestamp_(time) {
+StatisticInfo::StatisticInfo(const StreamStruct& str, cpu_load_t cpu_load, rss_t rss_bytes, time_t time)
+    : stream_struct_(str), cpu_load_(cpu_load), rss_bytes_(rss_bytes), timestamp_(time) {
   /*cpu_load_t cpu_load = cpu_load_;
   if (isnan(cpu_load_) || isinf(cpu_load_)) {
     cpu_load = 0.0;
   }*/
 }
 
-StatisticInfo::stream_struct_t StatisticInfo::GetStreamStruct() const {
+StreamStruct StatisticInfo::GetStreamStruct() const {
   return stream_struct_;
 }
 
@@ -51,8 +51,8 @@ StatisticInfo::cpu_load_t StatisticInfo::GetCpuLoad() const {
   return cpu_load_;
 }
 
-StatisticInfo::rss_t StatisticInfo::GetRss() const {
-  return rss_;
+StatisticInfo::rss_t StatisticInfo::GetRssBytes() const {
+  return rss_bytes_;
 }
 
 time_t StatisticInfo::GetTimestamp() const {
@@ -95,7 +95,7 @@ common::Error StatisticInfo::SerializeFields(json_object* out) const {
   json_object_object_add(out, FIELD_STREAM_OUTPUT_STREAMS, joutput_streams);
 
   json_object_object_add(out, FIELD_STREAM_LOOP_START_TIME, json_object_new_int64(stream_struct_.loop_start_time));
-  json_object_object_add(out, FIELD_STREAM_RSS, json_object_new_int64(rss_));
+  json_object_object_add(out, FIELD_STREAM_RSS, json_object_new_int64(rss_bytes_));
   json_object_object_add(out, FIELD_STREAM_CPU, json_object_new_double(cpu_load_));
   json_object_object_add(out, FIELD_STREAM_STATUS, json_object_new_int(stream_struct_.status));
   json_object_object_add(out, FIELD_STREAM_RESTARTS, json_object_new_int64(stream_struct_.restarts));

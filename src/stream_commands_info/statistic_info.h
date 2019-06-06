@@ -24,15 +24,14 @@ class StatisticInfo : public common::serializer::JsonSerializer<StatisticInfo> {
  public:
   typedef JsonSerializer<StatisticInfo> base_class;
   typedef double cpu_load_t;
-  typedef long rss_t;
-  typedef StreamStruct stream_struct_t;
+  typedef uint64_t rss_t;
 
   StatisticInfo();
-  StatisticInfo(const StreamStruct& str, cpu_load_t cpu_load, rss_t rss, time_t time);
+  StatisticInfo(const StreamStruct& str, cpu_load_t cpu_load, rss_t rss_bytes, time_t time);
 
-  stream_struct_t GetStreamStruct() const;
+  StreamStruct GetStreamStruct() const;
   cpu_load_t GetCpuLoad() const;
-  rss_t GetRss() const;
+  rss_t GetRssBytes() const;
   time_t GetTimestamp() const;
 
  protected:
@@ -40,9 +39,9 @@ class StatisticInfo : public common::serializer::JsonSerializer<StatisticInfo> {
   common::Error DoDeSerialize(json_object* serialized) override;
 
  private:
-  stream_struct_t stream_struct_;
+  StreamStruct stream_struct_;
   cpu_load_t cpu_load_;
-  rss_t rss_;
+  rss_t rss_bytes_;
   time_t timestamp_;
 };
 

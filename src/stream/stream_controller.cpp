@@ -79,7 +79,7 @@ bool PrepareStatus(StreamStruct* stats, double cpu_load, std::string* status_out
 
   long rss = common::system_info::GetProcessRss(getpid());
   const time_t current_time = common::time::current_mstime() / 1000;
-  StatisticInfo sinf(*stats, cpu_load, rss, current_time);
+  StatisticInfo sinf(*stats, cpu_load, rss * 1024, current_time);
 
   std::string out;
   common::Error err = sinf.SerializeToString(&out);

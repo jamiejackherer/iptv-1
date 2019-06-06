@@ -19,8 +19,8 @@
 
 #include <common/macros.h>
 
-#include "base/types.h"
 #include "base/channel_stats.h"
+#include "base/types.h"
 
 namespace iptv_cloud {
 
