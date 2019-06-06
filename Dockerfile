@@ -20,7 +20,7 @@ RUN set -ex; \
   \
   IPTV_DIR=/usr/src/iptv; \
   mkdir -p ${IPTV_DIR} && git clone https://github.com/fastogt/iptv ${IPTV_DIR} && cd ${IPTV_DIR} && git submodule update --init --recursive; \
-  cd ${IPTV_DIR}/build && PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig python3 build_env.py --prefix_path=$PREFIX; \
+  cd ${IPTV_DIR}/build && ./build_env.py --prefix_path=$PREFIX; \
   LICENSE_KEY="$(license_gen --machine-id)"; \
   cd ${IPTV_DIR}/build && PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig python3 build.py release $LICENSE_KEY 1 $PREFIX; \
 rm -rf $PYFASTOGT_DIR $IPTV_DIR # && apt-get purge -y --auto-remove $BUILD_DEPS
