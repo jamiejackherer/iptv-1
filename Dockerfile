@@ -1,6 +1,6 @@
 FROM debian:stretch-slim
 
-LABEL maintainer="FastoGT Maintainers <support@fastogt.com>"
+LABEL maintainer="Alexandr Topilski <support@fastogt.com>"
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 ENV USER iptv_cloud
@@ -31,4 +31,4 @@ WORKDIR /var/run/$APP_NAME
 
 ENTRYPOINT ["streamer_service"]
 
-EXPOSE 6317
+EXPOSE 6317 7000 8000
