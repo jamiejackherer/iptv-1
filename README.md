@@ -25,7 +25,7 @@ Visit our site: [fastocloud.com](https://fastocloud.com)
 [Admin panel](https://github.com/fastogt/iptv_admin)
 ==========
 ### Dashboard page:
-![](http://fastocloud.com/static/images/dashboard.png)
+![](https://fastocloud.com/static/images/dashboard.png)
 
 Gstreamer Pipelines
 ==========
