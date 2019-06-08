@@ -53,21 +53,21 @@ class BuildRequest(build_utils.BuildRequest):
             distribution = system_info.linux_get_dist()
             if distribution == 'DEBIAN':
                 dep_libs = ['gcc', 'g++', 'git', 'make', 'autoconf', 'libtool', 'pkg-config', 'gettext',
-                            'python3',
                             'libcairo2-dev', 'libssl-dev',
                             'libmount-dev', 'libdrm-dev', 'libsoup2.4-dev', 'libudev-dev', 'libjpeg-dev',
-                            'freeglut3-dev',
-                            'libegl1-mesa-dev',
+                            # 'freeglut3-dev',
+                            # 'libegl1-mesa-dev',
                             'zlib1g-dev', 'libffi-dev', 'yasm', 'bison', 'flex', 'libxrandr-dev',
                             'libfaac-dev', 'libfaad-dev', 'libgdk-pixbuf2.0-dev',
                             'ninja-build', 'intltool', 'liborc-0.4-dev', 'libxml2-dev', 'libx264-dev',
                             'libmp3lame-dev', 'librtmp-dev', 'libproxy-dev']
             elif distribution == 'RHEL':
                 dep_libs = ['gcc', 'gcc-c++', 'git', 'make', 'autoconf', 'libtool', 'cairo-gobject-devel',
-                            'libmount-devel', 'python3', 'libssl-devel',
+                            'libmount-devel', 'libssl-devel',
                             'libxcb-devel', 'libdrm-devel', 'libsoup-devel', 'libx264-devel',  # 'libpciaccess-devel',
                             'libudev-devel', 'libjpeg-turbo-devel', 'zlib-devel', 'libffi-devel', 'pcre-devel', 'yasm',
-                            'bison', 'flex', 'alsa-lib-devel', 'ninja-build', 'patch', 'lame-devel', 'librtmp-devel',
+                            'bison', 'flex', 'alsa-lib-devel', 'ninja-build', 'lame-devel', 'librtmp-devel',
+                            'gdk-pixbuf2-devel',
                             'libproxy-devel']
         else:
             raise NotImplemented("Unknown platform '%s'" % platform_name)
@@ -132,7 +132,7 @@ class BuildRequest(build_utils.BuildRequest):
 if __name__ == "__main__":
     # openssl_default_version = '1.1.1b'
     glib_default_version = '2.60.2'
-    cmake_default_version = '3.14.5'
+    cmake_default_version = '3.1.0'
     meson_default_version = '0.50.1'
     gstreamer_default_version = '1.16.0'
     gst_plugins_base_default_version = gstreamer_default_version
