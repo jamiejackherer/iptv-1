@@ -54,7 +54,7 @@ class BuildRequest(build_utils.BuildRequest):
             if distribution == 'DEBIAN':
                 dep_libs = ['gcc', 'g++', 'git', 'make', 'autoconf', 'libtool', 'pkg-config', 'gettext',
                             'python3',
-                            'libcairo2-dev',
+                            'libcairo2-dev', 'libssl-dev',
                             'libmount-dev', 'libdrm-dev', 'libsoup2.4-dev', 'libudev-dev', 'libjpeg-dev',
                             'freeglut3-dev',
                             'libegl1-mesa-dev',
@@ -64,7 +64,7 @@ class BuildRequest(build_utils.BuildRequest):
                             'libmp3lame-dev', 'librtmp-dev', 'libproxy-dev']
             elif distribution == 'RHEL':
                 dep_libs = ['gcc', 'gcc-c++', 'git', 'make', 'autoconf', 'libtool', 'cairo-gobject-devel',
-                            'libmount-devel', 'python3',
+                            'libmount-devel', 'python3', 'libssl-devel',
                             'libxcb-devel', 'libdrm-devel', 'libsoup-devel', 'libx264-devel',  # 'libpciaccess-devel',
                             'libudev-devel', 'libjpeg-turbo-devel', 'zlib-devel', 'libffi-devel', 'pcre-devel', 'yasm',
                             'bison', 'flex', 'alsa-lib-devel', 'ninja-build', 'patch', 'lame-devel', 'librtmp-devel',
@@ -130,7 +130,7 @@ class BuildRequest(build_utils.BuildRequest):
 
 
 if __name__ == "__main__":
-    openssl_default_version = '1.1.1b'
+    # openssl_default_version = '1.1.1b'
     glib_default_version = '2.60.2'
     cmake_default_version = '3.14.5'
     meson_default_version = '0.50.1'
@@ -215,15 +215,15 @@ if __name__ == "__main__":
                         default=glib_default_version)
 
     # openssl
-    openssl_grp = parser.add_mutually_exclusive_group()
-    openssl_grp.add_argument('--with-openssl',
-                             help='build openssl (default, version:{0})'.format(openssl_default_version),
-                             dest='with_openssl', action='store_true', default=True)
-    openssl_grp.add_argument('--without-openssl', help='build without openssl', dest='with_openssl',
-                             action='store_false',
-                             default=False)
-    parser.add_argument('--openssl-version', help='openssl version (default: {0})'.format(openssl_default_version),
-                        default=openssl_default_version)
+    # openssl_grp = parser.add_mutually_exclusive_group()
+    # openssl_grp.add_argument('--with-openssl',
+    #                         help='build openssl (default, version:{0})'.format(openssl_default_version),
+    #                         dest='with_openssl', action='store_true', default=True)
+    # openssl_grp.add_argument('--without-openssl', help='build without openssl', dest='with_openssl',
+    #                         action='store_false',
+    #                         default=False)
+    # parser.add_argument('--openssl-version', help='openssl version (default: {0})'.format(openssl_default_version),
+    #                    default=openssl_default_version)
 
     # gstreamer
     gstreamer_grp = parser.add_mutually_exclusive_group()
@@ -336,8 +336,8 @@ if __name__ == "__main__":
     if argv.with_common:
         request.build_common()
 
-    if argv.with_openssl:
-        request.build_openssl(argv.openssl_version, True)
+    # if argv.with_openssl:
+    #    request.build_openssl(argv.openssl_version, True)
     if argv.with_glib:
         request.build_glib(argv.glib_version)
     if argv.with_glib_networking:
