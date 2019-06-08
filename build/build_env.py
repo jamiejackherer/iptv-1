@@ -63,7 +63,7 @@ class BuildRequest(build_utils.BuildRequest):
                             'libmp3lame-dev', 'librtmp-dev', 'libproxy-dev']
             elif distribution == 'RHEL':
                 dep_libs = ['gcc', 'gcc-c++', 'git', 'make', 'autoconf', 'libtool', 'cairo-gobject-devel',
-                            'libmount-devel', 'libssl-devel',
+                            'libmount-devel', 'openssl-devel',
                             'libxcb-devel', 'libdrm-devel', 'libsoup-devel', 'libx264-devel',  # 'libpciaccess-devel',
                             'libudev-devel', 'libjpeg-turbo-devel', 'zlib-devel', 'libffi-devel', 'pcre-devel', 'yasm',
                             'bison', 'flex', 'alsa-lib-devel', 'ninja-build', 'lame-devel', 'librtmp-devel',
