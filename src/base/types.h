@@ -36,14 +36,15 @@ typedef double alpha_t;
 typedef common::Optional<int> bit_rate_t;
 
 enum StreamType : uint8_t {
-  RELAY = 0,
-  ENCODE = 1,
-  TIMESHIFT_PLAYER = 2,
-  TIMESHIFT_RECORDER = 3,
-  CATCHUP = 4,
-  TEST_LIFE = 5,
-  VOD_RELAY = 6,
-  VOD_ENCODE = 7,
+  PROXY = 0,
+  RELAY = 1,
+  ENCODE = 2,
+  TIMESHIFT_PLAYER = 3,
+  TIMESHIFT_RECORDER = 4,
+  CATCHUP = 5,
+  TEST_LIFE = 6,
+  VOD_RELAY = 7,
+  VOD_ENCODE = 8,
   SCREEN  // for inner use
 };
 

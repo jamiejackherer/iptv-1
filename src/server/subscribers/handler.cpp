@@ -391,7 +391,8 @@ common::ErrnoError SubscribersHandler::HandleRequestClientGetRuntimeChannelInfo(
       return common::make_errno_error(err_str, EAGAIN);
     }
 
-    const fastotv::protocol::response_t channels_responce = GetRuntimeChannelInfoResponceSuccsess(req->id, rchannel_str);
+    const fastotv::protocol::response_t channels_responce =
+        GetRuntimeChannelInfoResponceSuccsess(req->id, rchannel_str);
     common::ErrnoError err = client->WriteResponce(channels_responce);
     if (err) {
       return err;
