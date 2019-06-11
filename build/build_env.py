@@ -57,7 +57,7 @@ class BuildRequest(build_utils.BuildRequest):
                             'libmount-dev', 'libdrm-dev', 'libsoup2.4-dev', 'libudev-dev', 'libjpeg-dev',
                             # 'freeglut3-dev',
                             # 'libegl1-mesa-dev',
-                            'zlib1g-dev', 'libffi-dev', 'yasm', 'bison', 'flex', 'libxrandr-dev',
+                            'zlib1g-dev', 'libffi-dev', 'yasm', 'nasm', 'bison', 'flex', 'libxrandr-dev',
                             'libfaac-dev', 'libfaad-dev', 'libgdk-pixbuf2.0-dev',
                             'ninja-build', 'intltool', 'liborc-0.4-dev', 'libxml2-dev', 'libx264-dev',
                             'libmp3lame-dev', 'librtmp-dev', 'libproxy-dev']
@@ -66,7 +66,7 @@ class BuildRequest(build_utils.BuildRequest):
                             'libmount-devel', 'openssl-devel',
                             'libxcb-devel', 'libdrm-devel', 'libsoup-devel', 'libx264-devel',  # 'libpciaccess-devel',
                             'libudev-devel', 'libjpeg-turbo-devel', 'zlib-devel', 'libffi-devel', 'pcre-devel', 'yasm',
-                            'bison', 'flex', 'alsa-lib-devel', 'ninja-build', 'lame-devel', 'librtmp-devel',
+                            'nasm', 'bison', 'flex', 'alsa-lib-devel', 'ninja-build', 'lame-devel', 'librtmp-devel',
                             'gdk-pixbuf2-devel',
                             'libproxy-devel']
         else:
