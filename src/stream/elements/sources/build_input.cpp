@@ -22,6 +22,11 @@
 #include "stream/elements/sources/tcpsrc.h"
 #include "stream/elements/sources/udpsrc.h"
 
+namespace {
+const char kFFmpegUA[] = "Lavf/58.27.103";
+const char kVLC[] = "VLC/3.0.1 LibVLC/3.0.1";
+}
+
 namespace iptv_cloud {
 namespace stream {
 namespace elements {
@@ -36,7 +41,9 @@ Element* make_src(const InputUri& uri, element_id_t input_id, gint timeout_secs)
   } else if (scheme == common::uri::Url::http || scheme == common::uri::Url::https) {
     common::Optional<std::string> agent;
     if (uri.GetUserAgent() == InputUri::VLC) {
-      agent = std::string("VLC/3.0.1 LibVLC/3.0.1");
+      agent = std::string(kVLC);
+    } else if (uri.GetUserAgent() == InputUri::FFMPEG) {
+      agent = std::string(kFFmpegUA);
     }
 
     return make_http_src(url.GetUrl(), agent, timeout_secs, input_id);

@@ -27,7 +27,7 @@ class InputUri : public common::serializer::JsonSerializer<InputUri> {
  public:
   typedef JsonSerializer<InputUri> base_class;
   typedef channel_id_t uri_id_t;
-  enum UserAgent { GSTREAMER = 0, VLC };
+  enum UserAgent { GSTREAMER = 0, VLC, FFMPEG };
   typedef UserAgent user_agent_t;
 
   InputUri();
