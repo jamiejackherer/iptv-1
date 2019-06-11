@@ -70,10 +70,14 @@ class FullServiceInfo : public ServerInfo {
   FullServiceInfo();
   explicit FullServiceInfo(const common::net::HostAndPort& http_host,
                            const common::net::HostAndPort& vods_host,
+                           const common::net::HostAndPort& subscribers_host,
+                           const common::net::HostAndPort& bandwidth_host,
                            const base_class& base);
 
   common::net::HostAndPort GetHttpHost() const;
   common::net::HostAndPort GetVodsHost() const;
+  common::net::HostAndPort GetSubscribersHost() const;
+  common::net::HostAndPort GetBandwidthHost() const;
   std::string GetProjectVersion() const;
 
  protected:
@@ -83,6 +87,8 @@ class FullServiceInfo : public ServerInfo {
  private:
   common::net::HostAndPort http_host_;
   common::net::HostAndPort vods_host_;
+  common::net::HostAndPort subscribers_host_;
+  common::net::HostAndPort bandwidth_host_;
   std::string proj_ver_;
 };
 

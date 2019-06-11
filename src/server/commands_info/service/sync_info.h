@@ -17,7 +17,6 @@
 #include <string>
 #include <vector>
 
-#include <common/file_system/path.h>
 #include <common/serializer/json_serializer.h>
 
 namespace iptv_cloud {
@@ -28,10 +27,12 @@ class SyncInfo : public common::serializer::JsonSerializer<SyncInfo> {
  public:
   typedef JsonSerializer<SyncInfo> base_class;
   typedef std::vector<std::string> streams_t;
+  typedef std::vector<std::string> users_t;  // UserInfo
 
   SyncInfo();
 
   streams_t GetStreams() const;
+  users_t GetUsers() const;
 
  protected:
   common::Error DoDeSerialize(json_object* serialized) override;
@@ -39,6 +40,7 @@ class SyncInfo : public common::serializer::JsonSerializer<SyncInfo> {
 
  private:
   streams_t streams_;
+  users_t users_;
 };
 
 }  // namespace service

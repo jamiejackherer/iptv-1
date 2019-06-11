@@ -15,15 +15,20 @@
 #include "server/commands_info/service/sync_info.h"
 
 #define SYNC_INFO_STREAMS_FIELD "streams"
+#define SYNC_INFO_USERS_FIELD "subscribers"
 
 namespace iptv_cloud {
 namespace server {
 namespace service {
 
-SyncInfo::SyncInfo() : base_class(), streams_() {}
+SyncInfo::SyncInfo() : base_class(), streams_(), users_() {}
 
 SyncInfo::streams_t SyncInfo::GetStreams() const {
   return streams_;
+}
+
+SyncInfo::users_t SyncInfo::GetUsers() const {
+  return users_;
 }
 
 common::Error SyncInfo::SerializeFields(json_object* out) const {
@@ -33,6 +38,13 @@ common::Error SyncInfo::SerializeFields(json_object* out) const {
     json_object_array_add(jstreams, jstream);
   }
   json_object_object_add(out, SYNC_INFO_STREAMS_FIELD, jstreams);
+
+  json_object* jusers = json_object_new_array();
+  for (const std::string& user : users_) {
+    json_object* juser = json_object_new_string(user.c_str());
+    json_object_array_add(jusers, juser);
+  }
+  json_object_object_add(out, SYNC_INFO_USERS_FIELD, jusers);
   return common::Error();
 }
 
@@ -48,6 +60,18 @@ common::Error SyncInfo::DoDeSerialize(json_object* serialized) {
       streams.push_back(json_object_get_string(jstream));
     }
     inf.streams_ = streams;
+  }
+
+  json_object* jusers = nullptr;
+  json_bool jusers_exists = json_object_object_get_ex(serialized, SYNC_INFO_USERS_FIELD, &jusers);
+  if (jusers_exists) {
+    int len = json_object_array_length(jusers);
+    users_t users;
+    for (int i = 0; i < len; ++i) {
+      json_object* juser = json_object_array_get_idx(jusers, i);
+      users.push_back(json_object_get_string(juser));
+    }
+    inf.users_ = users;
   }
 
   *this = inf;

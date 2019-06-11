@@ -14,30 +14,27 @@
 
 #pragma once
 
-#include <string>
+#include <map>
+#include <mutex>
 
-#include <common/error.h>
-#include <common/net/types.h>
+#include "server/subscribers/isubscribe_finder.h"
 
 namespace iptv_cloud {
 namespace server {
 
-struct Config {
-  Config();
+class SyncFinder : public ISubscribeFinder {
+ public:
+  typedef std::map<fastotv::login_t, UserInfo> users_t;
 
-  static common::net::HostAndPort GetDefaultHost();
+  SyncFinder();
+  common::Error FindUser(const fastotv::commands_info::AuthInfo& user, UserInfo* uinf) const override;
+  void Clear();
+  void AddUser(const UserInfo& user);
 
-  common::net::HostAndPort host;
-  std::string log_path;
-  common::logging::LOG_LEVEL log_level;
-  common::net::HostAndPort http_host;
-  common::net::HostAndPort vods_host;
-  common::net::HostAndPort subscribers_host;
-  common::net::HostAndPort bandwidth_host;
-  time_t ttl_files_;
+ private:
+  users_t users_;
+  mutable std::mutex users_mutex_;
 };
-
-common::ErrnoError load_config_from_file(const std::string& config_absolute_path, Config* config) WARN_UNUSED_RESULT;
 
 }  // namespace server
 }  // namespace iptv_cloud

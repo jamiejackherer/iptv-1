@@ -12,9 +12,9 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/http/http_server.h"
+#include "server/http/server.h"
 
-#include "server/http/http_client.h"
+#include "server/http/client.h"
 
 namespace iptv_cloud {
 namespace server {

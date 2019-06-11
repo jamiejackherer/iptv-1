@@ -12,7 +12,7 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/http/http_handler.h"
+#include "server/vods/handler.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -21,58 +21,58 @@
 #include <string>
 #include <utility>
 
-#include "server/http/http_client.h"
 #include "server/ihttp_requests_observer.h"
+#include "server/vods/client.h"
 
 namespace iptv_cloud {
 namespace server {
 
-HttpHandler::HttpHandler(IHttpRequestsObserver* observer)
-    : http_root_(http_directory_path_t::MakeHomeDir()), observer_(observer) {}
+VodsHandler::VodsHandler(IHttpRequestsObserver* observer)
+    : vods_root_(vods_directory_path_t::MakeHomeDir()), observer_(observer) {}
 
-void HttpHandler::SetHttpRoot(const http_directory_path_t& http_root) {
-  http_root_ = http_root;
+void VodsHandler::SetVodsRoot(const vods_directory_path_t& vods_root) {
+  vods_root_ = vods_root;
 }
 
-void HttpHandler::PreLooped(common::libev::IoLoop* server) {
+void VodsHandler::PreLooped(common::libev::IoLoop* server) {
   UNUSED(server);
 }
 
-void HttpHandler::Accepted(common::libev::IoClient* client) {
+void VodsHandler::Accepted(common::libev::IoClient* client) {
   UNUSED(client);
 }
 
-void HttpHandler::Moved(common::libev::IoLoop* server, common::libev::IoClient* client) {
+void VodsHandler::Moved(common::libev::IoLoop* server, common::libev::IoClient* client) {
   UNUSED(server);
   UNUSED(client);
 }
 
-void HttpHandler::Closed(common::libev::IoClient* client) {
+void VodsHandler::Closed(common::libev::IoClient* client) {
   UNUSED(client);
 }
 
-void HttpHandler::TimerEmited(common::libev::IoLoop* server, common::libev::timer_id_t id) {
+void VodsHandler::TimerEmited(common::libev::IoLoop* server, common::libev::timer_id_t id) {
   UNUSED(server);
   UNUSED(id);
 }
 
 #if LIBEV_CHILD_ENABLE
-void HttpHandler::Accepted(common::libev::IoChild* child) {
+void VodsHandler::Accepted(common::libev::IoChild* child) {
   UNUSED(child);
 }
 
-void HttpHandler::Moved(common::libev::IoLoop* server, common::libev::IoChild* child) {
+void VodsHandler::Moved(common::libev::IoLoop* server, common::libev::IoChild* child) {
   UNUSED(server);
   UNUSED(child);
 }
 
-void HttpHandler::ChildStatusChanged(common::libev::IoChild* child, int status) {
+void VodsHandler::ChildStatusChanged(common::libev::IoChild* child, int status) {
   UNUSED(child);
   UNUSED(status);
 }
 #endif
 
-void HttpHandler::DataReceived(common::libev::IoClient* client) {
+void VodsHandler::DataReceived(common::libev::IoClient* client) {
   char buff[BUF_SIZE] = {0};
   size_t nread = 0;
   common::ErrnoError errn = client->SingleRead(buff, BUF_SIZE - 1, &nread);
@@ -82,24 +82,24 @@ void HttpHandler::DataReceived(common::libev::IoClient* client) {
     return;
   }
 
-  HttpClient* hclient = static_cast<server::HttpClient*>(client);
+  VodsClient* hclient = static_cast<server::VodsClient*>(client);
   ProcessReceived(hclient, buff, nread);
 }
 
-void HttpHandler::DataReadyToWrite(common::libev::IoClient* client) {
+void VodsHandler::DataReadyToWrite(common::libev::IoClient* client) {
   UNUSED(client);
 }
 
-void HttpHandler::PostLooped(common::libev::IoLoop* server) {
+void VodsHandler::PostLooped(common::libev::IoLoop* server) {
   UNUSED(server);
 }
 
-void HttpHandler::ProcessReceived(HttpClient* hclient, const char* request, size_t req_len) {
+void VodsHandler::ProcessReceived(VodsClient* hclient, const char* request, size_t req_len) {
   static const common::libev::http::HttpServerInfo hinf(PROJECT_NAME_TITLE, PROJECT_DOMAIN);
   common::http::HttpRequest hrequest;
   std::string request_str(request, req_len);
   std::pair<common::http::http_status, common::Error> result = common::http::parse_http_request(request_str, &hrequest);
-  DEBUG_LOG() << "Http request:\n" << request;
+  DEBUG_LOG() << "Vods request:\n" << request;
 
   if (result.second) {
     const std::string error_text = result.second->GetDescription();
@@ -133,9 +133,9 @@ void HttpHandler::ProcessReceived(HttpClient* hclient, const char* request, size
     }
 
     const std::string url_dirs = path.GetHpath();
-    auto dirs_path = http_root_.MakeDirectoryStringPath(url_dirs.substr(1));
+    auto dirs_path = vods_root_.MakeDirectoryStringPath(url_dirs.substr(1));
     if (!dirs_path) {
-      dirs_path = http_root_;
+      dirs_path = vods_root_;
     }
 
     auto file_path = dirs_path->MakeFileStringPath(path.GetFileName());
@@ -158,7 +158,6 @@ void HttpHandler::ProcessReceived(HttpClient* hclient, const char* request, size
     if (stat(file_path_str.c_str(), &sb) < 0) {
       common::ErrnoError err =
           hclient->SendError(protocol, common::http::HS_NOT_FOUND, extra_header, "File not found.", IsKeepAlive, hinf);
-      WARNING_LOG() << "File path: " << file_path_str << ", not found";
       if (err) {
         DEBUG_MSG_ERROR(err, common::logging::LOG_LEVEL_ERR);
       }

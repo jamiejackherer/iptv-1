@@ -38,7 +38,7 @@ protocol::response_t GetLogServiceResponceFail(protocol::sequance_id_t id, const
 protocol::request_t StopServiceRequest(protocol::sequance_id_t id, protocol::serializet_params_t params) {
   protocol::request_t req;
   req.id = id;
-  req.method = CLIENT_STOP_SERVICE;
+  req.method = DAEMON_STOP_SERVICE;
   req.params = params;
   return req;
 }
@@ -99,7 +99,7 @@ protocol::response_t GetLogStreamResponceFail(protocol::sequance_id_t id, const 
 protocol::request_t PingDaemonRequest(protocol::sequance_id_t id, protocol::serializet_params_t params) {
   protocol::request_t req;
   req.id = id;
-  req.method = SERVER_PING;
+  req.method = DAEMON_SERVER_PING;
   req.params = params;
   return req;
 }
@@ -114,19 +114,19 @@ protocol::response_t PingServiceResponceFail(protocol::sequance_id_t id, const s
 }
 
 protocol::request_t ChangedSourcesStreamBroadcast(protocol::serializet_params_t params) {
-  return protocol::request_t::MakeNotification(CLIENT_CHANGED_SOURCES_STREAM, params);
+  return protocol::request_t::MakeNotification(STREAM_CHANGED_SOURCES_STREAM, params);
 }
 
 protocol::request_t StatisitcStreamBroadcast(protocol::serializet_params_t params) {
-  return protocol::request_t::MakeNotification(CLIENT_STATISTIC_STREAM, params);
+  return protocol::request_t::MakeNotification(STREAM_STATISTIC_STREAM, params);
 }
 
 protocol::request_t StatisitcServiceBroadcast(protocol::serializet_params_t params) {
-  return protocol::request_t::MakeNotification(CLIENT_STATISTIC_SERVICE, params);
+  return protocol::request_t::MakeNotification(STREAM_STATISTIC_SERVICE, params);
 }
 
 protocol::request_t QuitStatusStreamBroadcast(protocol::serializet_params_t params) {
-  return protocol::request_t::MakeNotification(CLIENT_QUIT_STATUS_STREAM, params);
+  return protocol::request_t::MakeNotification(STREAM_QUIT_STATUS_STREAM, params);
 }
 
 }  // namespace server

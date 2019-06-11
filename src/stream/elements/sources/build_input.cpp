@@ -27,16 +27,22 @@ namespace stream {
 namespace elements {
 namespace sources {
 
-Element* make_src(const common::uri::Url& uri, element_id_t input_id, gint timeout_secs) {
-  common::uri::Url::scheme scheme = uri.GetScheme();
+Element* make_src(const InputUri& uri, element_id_t input_id, gint timeout_secs) {
+  common::uri::Url url = uri.GetInput();
+  common::uri::Url::scheme scheme = url.GetScheme();
   if (scheme == common::uri::Url::file) {
-    const common::uri::Upath upath = uri.GetPath();
+    const common::uri::Upath upath = url.GetPath();
     return make_file_src(upath.GetPath(), input_id);
   } else if (scheme == common::uri::Url::http || scheme == common::uri::Url::https) {
-    return make_http_src(uri.GetUrl(), timeout_secs, input_id);
+    common::Optional<std::string> agent;
+    if (uri.GetUserAgent() == InputUri::VLC) {
+      agent = std::string("VLC/3.0.1 LibVLC/3.0.1");
+    }
+
+    return make_http_src(url.GetUrl(), agent, timeout_secs, input_id);
   } else if (scheme == common::uri::Url::udp) {
     // udp://localhost:8080
-    std::string host_str = uri.GetHost();
+    std::string host_str = url.GetHost();
     common::net::HostAndPort host;
     if (!common::ConvertFromString(host_str, &host)) {
       NOTREACHED() << "Unknownt input url: " << host_str;
@@ -44,10 +50,10 @@ Element* make_src(const common::uri::Url& uri, element_id_t input_id, gint timeo
     }
     return make_udp_src(host, input_id);
   } else if (scheme == common::uri::Url::rtmp) {
-    return make_rtmp_src(uri.GetUrl(), timeout_secs, input_id);
+    return make_rtmp_src(url.GetUrl(), timeout_secs, input_id);
   } else if (scheme == common::uri::Url::tcp) {
     // tcp://localhost:8080
-    std::string host_str = uri.GetHost();
+    std::string host_str = url.GetHost();
     common::net::HostAndPort host;
     if (!common::ConvertFromString(host_str, &host)) {
       NOTREACHED() << "Unknownt input url: " << host_str;
@@ -56,7 +62,7 @@ Element* make_src(const common::uri::Url& uri, element_id_t input_id, gint timeo
     return make_tcp_server_src(host, input_id);
   }
 
-  NOTREACHED() << "Unknownt input url: " << uri.GetUrl();
+  NOTREACHED() << "Unknownt input url: " << url.GetUrl();
   return nullptr;
 }
 

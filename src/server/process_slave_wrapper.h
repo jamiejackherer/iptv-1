@@ -31,6 +31,7 @@
 namespace iptv_cloud {
 namespace server {
 class Child;
+class ISubscribeFinder;
 namespace pipe {
 class ProtocoledPipeClient;
 }
@@ -147,6 +148,8 @@ class ProcessSlaveWrapper : public common::libev::IoLoopObserver, public server:
   common::libev::IoLoopObserver* http_handler_;
   common::libev::IoLoop* vods_server_;
   common::libev::IoLoopObserver* vods_handler_;
+  common::libev::IoLoop* subscribers_server_;
+  common::libev::IoLoopObserver* subscribers_handler_;
 
   std::atomic<protocol::seq_id_t> id_;
   common::libev::timer_id_t ping_client_timer_;
@@ -157,6 +160,7 @@ class ProcessSlaveWrapper : public common::libev::IoLoopObserver, public server:
   stream_exec_t stream_exec_func_;
 
   std::map<common::file_system::ascii_directory_string_path, serialized_stream_t> vods_links_;
+  ISubscribeFinder* finder_;
 };
 
 }  // namespace server

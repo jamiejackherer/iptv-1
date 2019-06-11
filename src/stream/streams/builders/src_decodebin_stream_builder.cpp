@@ -85,11 +85,12 @@ void SrcDecodeStreamBuilder::HandleDecodebinCreated(elements::ElementDecodebin* 
 elements::Element* SrcDecodeStreamBuilder::BuildInputSrc() {
   const Config* config = GetConfig();
   input_t prepared = config->GetInput();
-  const common::uri::Url uri = prepared[0].GetInput();
+  InputUri uri = prepared[0];
+  const common::uri::Url url = uri.GetInput();
   elements::Element* src = elements::sources::make_src(uri, 0, IBaseStream::src_timeout_sec);
   pad::Pad* src_pad = src->StaticPad("src");
   if (src_pad->IsValid()) {
-    HandleInputSrcPadCreated(uri.GetScheme(), src_pad, 0);
+    HandleInputSrcPadCreated(url.GetScheme(), src_pad, 0);
   }
   delete src_pad;
   ElementAdd(src);

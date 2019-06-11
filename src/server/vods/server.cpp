@@ -12,32 +12,19 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "server/vods/server.h"
 
-#include <string>
-
-#include <common/error.h>
-#include <common/net/types.h>
+#include "server/vods/client.h"
 
 namespace iptv_cloud {
 namespace server {
 
-struct Config {
-  Config();
+VodsServer::VodsServer(const common::net::HostAndPort& host, common::libev::IoLoopObserver* observer)
+    : base_class(host, false, observer) {}
 
-  static common::net::HostAndPort GetDefaultHost();
-
-  common::net::HostAndPort host;
-  std::string log_path;
-  common::logging::LOG_LEVEL log_level;
-  common::net::HostAndPort http_host;
-  common::net::HostAndPort vods_host;
-  common::net::HostAndPort subscribers_host;
-  common::net::HostAndPort bandwidth_host;
-  time_t ttl_files_;
-};
-
-common::ErrnoError load_config_from_file(const std::string& config_absolute_path, Config* config) WARN_UNUSED_RESULT;
+common::libev::tcp::TcpClient* VodsServer::CreateClient(const common::net::socket_info& info) {
+  return new VodsClient(this, info);
+}
 
 }  // namespace server
 }  // namespace iptv_cloud

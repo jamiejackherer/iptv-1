@@ -6,6 +6,10 @@ SET(STREAMER_SERVICE_HTTP_PORT 8000)
 SET(STREAMER_SERVICE_HTTP_HOST "localhost:${STREAMER_SERVICE_HTTP_PORT}")
 SET(STREAMER_SERVICE_VODS_PORT 7000)
 SET(STREAMER_SERVICE_VODS_HOST "localhost:${STREAMER_SERVICE_VODS_PORT}")
+SET(STREAMER_SERVICE_SUBSCRIBERS_PORT 6000)
+SET(STREAMER_SERVICE_SUBSCRIBERS_HOST "localhost:${STREAMER_SERVICE_SUBSCRIBERS_PORT}")
+SET(STREAMER_SERVICE_BANDWIDTH_PORT 5000)
+SET(STREAMER_SERVICE_SUBSCRIBERS_HOST "localhost:${STREAMER_SERVICE_BANDWIDTH_PORT}")
 SET(STREAMER_SERVICE_TTL_FILES 3600)
 SET(STREAMER_SERVICE_NAME_EXE ${STREAMER_SERVICE_NAME}_s)
 
@@ -52,6 +56,7 @@ SET(OPTIONS_HEADERS ${CMAKE_SOURCE_DIR}/src/server/options/options.h)
 SET(OPTIONS_SOURCES ${CMAKE_SOURCE_DIR}/src/server/options/options.cpp)
 
 FIND_PACKAGE(Common REQUIRED)
+FIND_PACKAGE(FastoTvProtocol REQUIRED)
 FIND_PACKAGE(JSON-C REQUIRED)
 
 IF(OS_WINDOWS)
@@ -67,30 +72,53 @@ ELSEIF(OS_POSIX)
 ENDIF(OS_WINDOWS)
 
 SET(SERVER_HTTP_HEADERS
-  ${CMAKE_SOURCE_DIR}/src/server/http/http_handler.h
-  ${CMAKE_SOURCE_DIR}/src/server/http/http_client.h
-  ${CMAKE_SOURCE_DIR}/src/server/http/http_server.h
+  ${CMAKE_SOURCE_DIR}/src/server/http/handler.h
+  ${CMAKE_SOURCE_DIR}/src/server/http/client.h
+  ${CMAKE_SOURCE_DIR}/src/server/http/server.h
 )
 
 SET(SERVER_HTTP_SOURCES
-  ${CMAKE_SOURCE_DIR}/src/server/http/http_handler.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/http/http_client.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/http/http_server.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/http/handler.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/http/client.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/http/server.cpp
 )
 
 SET(SERVER_VODS_HEADERS
-  ${CMAKE_SOURCE_DIR}/src/server/vods/vods_handler.h
-  ${CMAKE_SOURCE_DIR}/src/server/vods/vods_client.h
-  ${CMAKE_SOURCE_DIR}/src/server/vods/vods_server.h
+  ${CMAKE_SOURCE_DIR}/src/server/vods/handler.h
+  ${CMAKE_SOURCE_DIR}/src/server/vods/client.h
+  ${CMAKE_SOURCE_DIR}/src/server/vods/server.h
 )
 
 SET(SERVER_VODS_SOURCES
-  ${CMAKE_SOURCE_DIR}/src/server/vods/vods_handler.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/vods/vods_client.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/vods/vods_server.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/vods/handler.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/vods/client.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/vods/server.cpp
+)
+
+SET(SERVER_SUBSCRIBERS_HEADERS
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/handler.h
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/client.h
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/server.h
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/commands.h
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/server_auth_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/commands_info/user_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/isubscribe_finder.h
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/rpc/user_rpc_info.h
+)
+
+SET(SERVER_SUBSCRIBERS_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/handler.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/client.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/server.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/commands.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/server_auth_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/commands_info/user_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/isubscribe_finder.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/subscribers/rpc/user_rpc_info.cpp
 )
 
 SET(DAEMONS_HEADERS
+  ${CMAKE_SOURCE_DIR}/src/server/sync_finder.h
   ${CMAKE_SOURCE_DIR}/src/server/child_stream.h
   ${CMAKE_SOURCE_DIR}/src/server/process_slave_wrapper.h
   ${CMAKE_SOURCE_DIR}/src/server/daemon_client.h
@@ -102,9 +130,11 @@ SET(DAEMONS_HEADERS
 
   ${SERVER_HTTP_HEADERS}
   ${SERVER_VODS_HEADERS}
+  ${SERVER_SUBSCRIBERS_HEADERS}
   ${DAEMONS_HEADERS_COMANDS_INFO}
 )
 SET(DAEMONS_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/server/sync_finder.cpp
   ${CMAKE_SOURCE_DIR}/src/server/child_stream.cpp
   ${CMAKE_SOURCE_DIR}/src/server/process_slave_wrapper.cpp
   ${CMAKE_SOURCE_DIR}/src/server/daemon_client.cpp
@@ -116,6 +146,7 @@ SET(DAEMONS_SOURCES
 
   ${SERVER_HTTP_SOURCES}
   ${SERVER_VODS_SOURCES}
+  ${SERVER_SUBSCRIBERS_SOURCES}
   ${DAEMONS_SOURCES_COMANDS_INFO}
 )
 
@@ -185,6 +216,7 @@ SET(DAEMON_SOURCES
 )
 SET(DAEMON_LIBRARIES
   ${DAEMON_LIBRARIES}
+  ${FASTOTV_PROTOCOL_LIBRARIES}
   ${COMMON_LIBRARIES}
   ${JSONC_LIBRARIES}
   ${PLATFORM_LIBRARIES}
@@ -193,6 +225,7 @@ SET(DAEMON_LIBRARIES
 )
 SET(PRIVATE_INCLUDE_DIRECTORIES_SLAVE
   ${PRIVATE_INCLUDE_DIRECTORIES_SLAVE}
+  ${FASTOTV_PROTOCOL_INCLUDE_DIR}
   ${CMAKE_SOURCE_DIR}/src
 )
 SET(CORE_LIBRARY ${LIB_INSTALL_DESTINATION}/${CMAKE_SHARED_LIBRARY_PREFIX}${STREAMER_CORE}${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -217,7 +250,10 @@ SET(PRIVATE_COMPILE_DEFINITIONS_SLAVE
   -DCLIENT_PORT=${STREAMER_SERVICE_PORT}
   -DHTTP_PORT=${STREAMER_SERVICE_HTTP_PORT}
   -DVODS_PORT=${STREAMER_SERVICE_VODS_PORT}
+  -DSUBSCRIPERS_PORT=${STREAMER_SERVICE_SUBSCRIBERS_PORT}
+  -DBANDWIDTH_PORT=${STREAMER_SERVICE_BANDWIDTH_PORT}
   -DTTL_FILES=${STREAMER_SERVICE_TTL_FILES}
+  -DUNKNOWN_ICON_URI="https://fastotv.com/images/unknown_channel.png"
 )
 
 SET(EXE_DAEMON_SOURCES ${CMAKE_SOURCE_DIR}/src/server/daemon_slave.cpp)

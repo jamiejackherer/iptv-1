@@ -12,32 +12,25 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
-
-#include <string>
-
-#include <common/error.h>
-#include <common/net/types.h>
+#include "server/http/client.h"
 
 namespace iptv_cloud {
 namespace server {
 
-struct Config {
-  Config();
+HttpClient::HttpClient(common::libev::IoLoop* server, const common::net::socket_info& info)
+    : base_class(server, info), is_verified_(false) {}
 
-  static common::net::HostAndPort GetDefaultHost();
+bool HttpClient::IsVerified() const {
+  return is_verified_;
+}
 
-  common::net::HostAndPort host;
-  std::string log_path;
-  common::logging::LOG_LEVEL log_level;
-  common::net::HostAndPort http_host;
-  common::net::HostAndPort vods_host;
-  common::net::HostAndPort subscribers_host;
-  common::net::HostAndPort bandwidth_host;
-  time_t ttl_files_;
-};
+void HttpClient::SetVerified(bool verif) {
+  is_verified_ = verif;
+}
 
-common::ErrnoError load_config_from_file(const std::string& config_absolute_path, Config* config) WARN_UNUSED_RESULT;
+const char* HttpClient::ClassName() const {
+  return "HttpClient";
+}
 
 }  // namespace server
 }  // namespace iptv_cloud

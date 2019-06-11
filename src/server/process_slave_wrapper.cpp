@@ -56,12 +56,15 @@
 #include "server/daemon_client.h"
 #include "server/daemon_commands.h"
 #include "server/daemon_server.h"
-#include "server/http/http_handler.h"
-#include "server/http/http_server.h"
+#include "server/http/handler.h"
+#include "server/http/server.h"
 #include "server/options/options.h"
 #include "server/stream_struct_utils.h"
-#include "server/vods/vods_handler.h"
-#include "server/vods/vods_server.h"
+#include "server/subscribers/handler.h"
+#include "server/subscribers/server.h"
+#include "server/sync_finder.h"
+#include "server/vods/handler.h"
+#include "server/vods/server.h"
 
 #include "stream_commands_info/changed_sources_info.h"
 #include "stream_commands_info/statistic_info.h"
@@ -294,6 +297,8 @@ ProcessSlaveWrapper::ProcessSlaveWrapper(const std::string& license_key, const C
       http_handler_(nullptr),
       vods_server_(),
       vods_handler_(nullptr),
+      subscribers_server_(),
+      subscribers_handler_(nullptr),
       id_(0),
       ping_client_timer_(INVALID_TIMER_ID),
       node_stats_timer_(INVALID_TIMER_ID),
@@ -311,7 +316,12 @@ ProcessSlaveWrapper::ProcessSlaveWrapper(const std::string& license_key, const C
 
   vods_handler_ = new VodsHandler(this);
   vods_server_ = new VodsServer(config.vods_host, vods_handler_);
-  vods_server_->SetName("vod_server");
+  vods_server_->SetName("vods_server");
+
+  finder_ = new SyncFinder;
+  subscribers_handler_ = new SubscribersHandler(finder_, config.bandwidth_host);
+  subscribers_server_ = new SubscribersServer(config.subscribers_host, subscribers_handler_);
+  subscribers_server_->SetName("subscribers_server");
 }
 
 int ProcessSlaveWrapper::SendStopDaemonRequest(const std::string& license) {
@@ -346,6 +356,9 @@ int ProcessSlaveWrapper::SendStopDaemonRequest(const std::string& license) {
 }
 
 ProcessSlaveWrapper::~ProcessSlaveWrapper() {
+  destroy(&subscribers_server_);
+  destroy(&subscribers_handler_);
+  destroy(&finder_);
   destroy(&vods_server_);
   destroy(&vods_handler_);
   destroy(&http_server_);
@@ -418,6 +431,24 @@ int ProcessSlaveWrapper::Exec(int argc, char** argv) {
     UNUSED(res);
   });
 
+  SubscribersServer* subscribers_server = static_cast<SubscribersServer*>(subscribers_server_);
+  std::thread subscribers_thread = std::thread([subscribers_server] {
+    common::ErrnoError err = subscribers_server->Bind(true);
+    if (err) {
+      DEBUG_MSG_ERROR(err, common::logging::LOG_LEVEL_ERR);
+      return;
+    }
+
+    err = subscribers_server->Listen(5);
+    if (err) {
+      DEBUG_MSG_ERROR(err, common::logging::LOG_LEVEL_ERR);
+      return;
+    }
+
+    int res = subscribers_server->Exec();
+    UNUSED(res);
+  });
+
   int res = EXIT_FAILURE;
   DaemonServer* server = static_cast<DaemonServer*>(loop_);
   common::ErrnoError err = server->Bind(true);
@@ -438,6 +469,7 @@ int ProcessSlaveWrapper::Exec(int argc, char** argv) {
   res = server->Exec();
 
 finished:
+  subscribers_thread.join();
   vods_thread.join();
   http_thread.join();
   if (perf_monitor) {
@@ -506,6 +538,7 @@ void ProcessSlaveWrapper::TimerEmited(common::libev::IoLoop* server, common::lib
       utils::RemoveFilesByExtension((*it).first, CHUNK_EXT);
     }
   } else if (quit_cleanup_timer_ == id) {
+    subscribers_server_->Stop();
     vods_server_->Stop();
     http_server_->Stop();
     loop_->Stop();
@@ -724,7 +757,7 @@ void ProcessSlaveWrapper::OnHttpRequest(common::libev::http::HttpClient* client,
 
         bool is_full_vod = CheckIsFullVod(file);
         if (!is_full_vod) {
-          const serialized_stream_t config = (*it).second;
+          const serialized_stream_t config = it->second;
           CreateChildStream(config);
         }
       });
@@ -1239,6 +1272,17 @@ common::ErrnoError ProcessSlaveWrapper::HandleRequestClientSyncService(Protocole
       AddStreamLine(config);
     }
 
+    // refresh subscribers
+    SyncFinder* sfinder = static_cast<SyncFinder*>(finder_);
+    sfinder->Clear();
+    for (const std::string& user : sync_info.GetUsers()) {
+      UserInfo uinf;
+      common::Error err = uinf.DeSerializeFromString(user);
+      if (!err) {
+        sfinder->AddUser(uinf);
+      }
+    }
+
     protocol::response_t resp = StopStreamResponceSuccess(req->id);
     dclient->WriteResponce(resp);
     return common::ErrnoError();
@@ -1387,27 +1431,27 @@ common::ErrnoError ProcessSlaveWrapper::HandleRequestClientGetLogService(Protoco
 
 common::ErrnoError ProcessSlaveWrapper::HandleRequestServiceCommand(ProtocoledDaemonClient* dclient,
                                                                     protocol::request_t* req) {
-  if (req->method == CLIENT_START_STREAM) {
+  if (req->method == DAEMON_START_STREAM) {
     return HandleRequestClientStartStream(dclient, req);
-  } else if (req->method == CLIENT_STOP_STREAM) {
+  } else if (req->method == DAEMON_STOP_STREAM) {
     return HandleRequestClientStopStream(dclient, req);
-  } else if (req->method == CLIENT_RESTART_STREAM) {
+  } else if (req->method == DAEMON_RESTART_STREAM) {
     return HandleRequestClientRestartStream(dclient, req);
-  } else if (req->method == CLIENT_GET_LOG_STREAM) {
+  } else if (req->method == DAEMON_GET_LOG_STREAM) {
     return HandleRequestClientGetLogStream(dclient, req);
-  } else if (req->method == CLIENT_GET_PIPELINE_STREAM) {
+  } else if (req->method == DAEMON_GET_PIPELINE_STREAM) {
     return HandleRequestClientGetPipelineStream(dclient, req);
-  } else if (req->method == CLIENT_PREPARE_SERVICE) {
+  } else if (req->method == DAEMON_PREPARE_SERVICE) {
     return HandleRequestClientPrepareService(dclient, req);
-  } else if (req->method == CLIENT_SYNC_SERVICE) {
+  } else if (req->method == DAEMON_SYNC_SERVICE) {
     return HandleRequestClientSyncService(dclient, req);
-  } else if (req->method == CLIENT_STOP_SERVICE) {
+  } else if (req->method == DAEMON_STOP_SERVICE) {
     return HandleRequestClientStopService(dclient, req);
-  } else if (req->method == CLIENT_ACTIVATE) {
+  } else if (req->method == DAEMON_ACTIVATE) {
     return HandleRequestClientActivate(dclient, req);
-  } else if (req->method == CLIENT_PING_SERVICE) {
+  } else if (req->method == DAEMON_PING_SERVICE) {
     return HandleRequestClientPingService(dclient, req);
-  } else if (req->method == CLIENT_GET_LOG_SERVICE) {
+  } else if (req->method == DAEMON_GET_LOG_SERVICE) {
     return HandleRequestClientGetLogService(dclient, req);
   }
 
@@ -1424,7 +1468,7 @@ common::ErrnoError ProcessSlaveWrapper::HandleResponceServiceCommand(ProtocoledD
 
   protocol::request_t req;
   if (dclient->PopRequestByID(resp->id, &req)) {
-    if (req.method == SERVER_PING) {
+    if (req.method == DAEMON_SERVER_PING) {
       HandleResponcePingService(dclient, resp);
     } else {
       WARNING_LOG() << "HandleResponceServiceCommand not handled command: " << req.method;
@@ -1485,7 +1529,8 @@ std::string ProcessSlaveWrapper::MakeServiceStats(bool full_stat) const {
 
   std::string node_stats;
   if (full_stat) {
-    service::FullServiceInfo fstat(config_.http_host, config_.vods_host, stat);
+    service::FullServiceInfo fstat(config_.http_host, config_.vods_host, config_.subscribers_host,
+                                   config_.bandwidth_host, stat);
     common::Error err_ser = fstat.SerializeToString(&node_stats);
     if (err_ser) {
       const std::string err_str = err_ser->GetDescription();

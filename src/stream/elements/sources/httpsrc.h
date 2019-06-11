@@ -36,7 +36,10 @@ class ElementSoupHTTPSrc : public ElementLocation<ELEMENT_SOUP_HTTP_SRC> {
   void SetUserAgent(const std::string& agent);
 };
 
-ElementSoupHTTPSrc* make_http_src(const std::string& location, gint timeout_secs, element_id_t input_id);
+ElementSoupHTTPSrc* make_http_src(const std::string& location,
+                                  const common::Optional<std::string>& user_agent,
+                                  gint timeout_secs,
+                                  element_id_t input_id);
 
 }  // namespace sources
 }  // namespace elements

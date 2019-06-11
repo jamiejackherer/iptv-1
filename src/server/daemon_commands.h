@@ -21,28 +21,28 @@
 // daemon
 // client commands
 
-#define CLIENT_START_STREAM "start_stream"  // {"config": {...}, "command_line": {...} }
-#define CLIENT_STOP_STREAM "stop_stream"
-#define CLIENT_RESTART_STREAM "restart_stream"
-#define CLIENT_GET_LOG_STREAM "get_log_stream"
-#define CLIENT_GET_PIPELINE_STREAM "get_pipeline_stream"
+#define DAEMON_START_STREAM "start_stream"  // {"config": {...}, "command_line": {...} }
+#define DAEMON_STOP_STREAM "stop_stream"
+#define DAEMON_RESTART_STREAM "restart_stream"
+#define DAEMON_GET_LOG_STREAM "get_log_stream"
+#define DAEMON_GET_PIPELINE_STREAM "get_pipeline_stream"
 
-#define CLIENT_ACTIVATE "activate_request"  // {"key": "XXXXXXXXXXXXXXXXXX"}
-#define CLIENT_STOP_SERVICE "stop_service"  // {"delay": 0 }
-#define CLIENT_PREPARE_SERVICE \
+#define DAEMON_ACTIVATE "activate_request"  // {"key": "XXXXXXXXXXXXXXXXXX"}
+#define DAEMON_STOP_SERVICE "stop_service"  // {"delay": 0 }
+#define DAEMON_PREPARE_SERVICE \
   "prepare_service"  // { "feedback_directory": "", "timeshifts_directory": "", "hls_directory": "",
                      // "playlists_directory": "", "dvb_directory": "", "capture_card_directory": "" }
-#define CLIENT_SYNC_SERVICE "sync_service"
-#define CLIENT_PING_SERVICE "ping_service"
-#define CLIENT_GET_LOG_SERVICE "get_log_service"  // {"path":"http://localhost/service/id"}
+#define DAEMON_SYNC_SERVICE "sync_service"
+#define DAEMON_PING_SERVICE "ping_service"
+#define DAEMON_GET_LOG_SERVICE "get_log_service"  // {"path":"http://localhost/service/id"}
 
-#define SERVER_PING "ping_client"
+#define DAEMON_SERVER_PING "ping_client"
 
 // Broadcast
-#define CLIENT_CHANGED_SOURCES_STREAM "changed_source_stream"
-#define CLIENT_STATISTIC_STREAM "statistic_stream"
-#define CLIENT_QUIT_STATUS_STREAM "quit_status_stream"
-#define CLIENT_STATISTIC_SERVICE "statistic_service"
+#define STREAM_CHANGED_SOURCES_STREAM "changed_source_stream"
+#define STREAM_STATISTIC_STREAM "statistic_stream"
+#define STREAM_QUIT_STATUS_STREAM "quit_status_stream"
+#define STREAM_STATISTIC_SERVICE "statistic_service"
 
 namespace iptv_cloud {
 namespace server {

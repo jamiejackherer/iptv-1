@@ -31,11 +31,16 @@ void ElementSoupHTTPSrc::SetUserAgent(const std::string& agent) {
   SetProperty("user-agent", agent);
 }
 
-ElementSoupHTTPSrc* make_http_src(const std::string& location, gint timeout_secs, element_id_t input_id) {
+ElementSoupHTTPSrc* make_http_src(const std::string& location,
+                                  const common::Optional<std::string>& user_agent,
+                                  gint timeout_secs,
+                                  element_id_t input_id) {
   ElementSoupHTTPSrc* http_src = make_sources<ElementSoupHTTPSrc>(input_id);
   http_src->SetLocation(location);
   http_src->SetTimeOut(timeout_secs);
-  //http_src->SetUserAgent("SmartLabs");
+  if (user_agent) {
+    http_src->SetUserAgent(*user_agent);
+  }
   return http_src;
 }
 

@@ -110,7 +110,7 @@ bool MosaicStreamBuilder::InitPipeline() {
       SoundInfo sound;
       InputUri uri = prepared[i];
       const common::uri::Url iuri = uri.GetInput();
-      elements::Element* src = elements::sources::make_src(iuri, i, IBaseStream::src_timeout_sec);
+      elements::Element* src = elements::sources::make_src(uri, i, IBaseStream::src_timeout_sec);
       pad::Pad* src_pad = src->StaticPad("src");
       if (src_pad->IsValid()) {
         HandleInputSrcPadCreated(iuri.GetScheme(), src_pad, i);

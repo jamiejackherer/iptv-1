@@ -12,24 +12,36 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/http/http_client.h"
+#include "server/sync_finder.h"
 
 namespace iptv_cloud {
 namespace server {
 
-HttpClient::HttpClient(common::libev::IoLoop* server, const common::net::socket_info& info)
-    : base_class(server, info), is_verified_(false) {}
+SyncFinder::SyncFinder() : users_() {}
 
-bool HttpClient::IsVerified() const {
-  return is_verified_;
+common::Error SyncFinder::FindUser(const fastotv::commands_info::AuthInfo& user, UserInfo* uinf) const {
+  if (!user.IsValid() || !uinf) {
+    return common::make_error_inval();
+  }
+
+  std::unique_lock<std::mutex> lock(users_mutex_);
+  const auto it = users_.find(user.GetLogin());
+  if (it == users_.end()) {
+    return common::make_error("User not found");
+  }
+
+  *uinf = it->second;
+  return common::Error();
 }
 
-void HttpClient::SetVerified(bool verif) {
-  is_verified_ = verif;
+void SyncFinder::Clear() {
+  std::unique_lock<std::mutex> lock(users_mutex_);
+  users_.clear();
 }
 
-const char* HttpClient::ClassName() const {
-  return "HttpClient";
+void SyncFinder::AddUser(const UserInfo& user) {
+  std::unique_lock<std::mutex> lock(users_mutex_);
+  users_.insert(std::make_pair(user.GetLogin(), user));
 }
 
 }  // namespace server

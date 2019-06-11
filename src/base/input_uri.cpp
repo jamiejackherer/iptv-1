@@ -23,12 +23,14 @@
 
 #define FIELD_INPUT_ID "id"
 #define FIELD_INPUT_URI "uri"
+#define FIELD_USER_AGENT "user_agent"
 
 namespace iptv_cloud {
 
 InputUri::InputUri() : InputUri(0, common::uri::Url()) {}
 
-InputUri::InputUri(uri_id_t id, const common::uri::Url& input) : base_class(), id_(id), input_(input) {}
+InputUri::InputUri(uri_id_t id, const common::uri::Url& input, user_agent_t ua)
+    : base_class(), id_(id), input_(input), user_agent_(ua) {}
 
 InputUri::uri_id_t InputUri::GetID() const {
   return id_;
@@ -44,6 +46,14 @@ common::uri::Url InputUri::GetInput() const {
 
 void InputUri::SetInput(const common::uri::Url& uri) {
   input_ = uri;
+}
+
+InputUri::user_agent_t InputUri::GetUserAgent() const {
+  return user_agent_;
+}
+
+void InputUri::SetUserAgent(user_agent_t agent) {
+  user_agent_ = agent;
 }
 
 bool InputUri::Equals(const InputUri& inf) const {
@@ -64,6 +74,13 @@ common::Error InputUri::DoDeSerialize(json_object* serialized) {
     res.SetInput(common::uri::Url(json_object_get_string(juri)));
   }
 
+  json_object* juser_agent = nullptr;
+  json_bool juser_agent_exists = json_object_object_get_ex(serialized, FIELD_USER_AGENT, &juser_agent);
+  if (juser_agent_exists) {
+    user_agent_t agent = static_cast<user_agent_t>(json_object_get_int(juser_agent));
+    res.SetUserAgent(agent);
+  }
+
   *this = res;
   return common::Error();
 }
@@ -72,6 +89,8 @@ common::Error InputUri::SerializeFields(json_object* out) const {
   json_object_object_add(out, FIELD_INPUT_ID, json_object_new_int64(GetID()));
   std::string url_str = common::ConvertToString(GetInput());
   json_object_object_add(out, FIELD_INPUT_URI, json_object_new_string(url_str.c_str()));
+  json_object_object_add(out, FIELD_USER_AGENT, json_object_new_int(user_agent_));
+
   return common::Error();
 }
 

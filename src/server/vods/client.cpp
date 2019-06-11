@@ -12,18 +12,24 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/vods/vods_server.h"
-
-#include "server/vods/vods_client.h"
+#include "server/vods/client.h"
 
 namespace iptv_cloud {
 namespace server {
 
-VodsServer::VodsServer(const common::net::HostAndPort& host, common::libev::IoLoopObserver* observer)
-    : base_class(host, false, observer) {}
+VodsClient::VodsClient(common::libev::IoLoop* server, const common::net::socket_info& info)
+    : base_class(server, info), is_verified_(false) {}
 
-common::libev::tcp::TcpClient* VodsServer::CreateClient(const common::net::socket_info& info) {
-  return new VodsClient(this, info);
+bool VodsClient::IsVerified() const {
+  return is_verified_;
+}
+
+void VodsClient::SetVerified(bool verif) {
+  is_verified_ = verif;
+}
+
+const char* VodsClient::ClassName() const {
+  return "VodsClient";
 }
 
 }  // namespace server

@@ -152,6 +152,24 @@ if __name__ == "__main__":
     system_grp.add_argument('--without-system', help='build without system dependencies', dest='with_system',
                             action='store_false', default=False)
 
+    # cmake
+    cmake_grp = parser.add_mutually_exclusive_group()
+    cmake_grp.add_argument('--with-cmake', help='build cmake (default, version:{0})'.format(meson_default_version),
+                           dest='with_cmake', action='store_true', default=True)
+    cmake_grp.add_argument('--without-cmake', help='build without cmake', dest='with_cmake', action='store_false',
+                           default=False)
+    parser.add_argument('--cmake-version', help='cmake version (default: {0})'.format(cmake_default_version),
+                        default=cmake_default_version)
+
+    # meson
+    meson_grp = parser.add_mutually_exclusive_group()
+    meson_grp.add_argument('--with-meson', help='build meson (default, version:{0})'.format(meson_default_version),
+                           dest='with_meson', action='store_true', default=True)
+    meson_grp.add_argument('--without-meson', help='build without meson', dest='with_meson', action='store_false',
+                           default=False)
+    parser.add_argument('--meson-version', help='meson version (default: {0})'.format(meson_default_version),
+                        default=meson_default_version)
+
     # json-c
     jsonc_grp = parser.add_mutually_exclusive_group()
     jsonc_grp.add_argument('--with-json-c', help='build json-c (default, version: git master)', dest='with_jsonc',
@@ -174,23 +192,16 @@ if __name__ == "__main__":
                             action='store_false',
                             default=False)
 
-    # cmake
-    cmake_grp = parser.add_mutually_exclusive_group()
-    cmake_grp.add_argument('--with-cmake', help='build cmake (default, version:{0})'.format(meson_default_version),
-                           dest='with_cmake', action='store_true', default=True)
-    cmake_grp.add_argument('--without-cmake', help='build without cmake', dest='with_cmake', action='store_false',
-                           default=False)
-    parser.add_argument('--cmake-version', help='cmake version (default: {0})'.format(cmake_default_version),
-                        default=cmake_default_version)
-
-    # meson
-    meson_grp = parser.add_mutually_exclusive_group()
-    meson_grp.add_argument('--with-meson', help='build meson (default, version:{0})'.format(meson_default_version),
-                           dest='with_meson', action='store_true', default=True)
-    meson_grp.add_argument('--without-meson', help='build without meson', dest='with_meson', action='store_false',
-                           default=False)
-    parser.add_argument('--meson-version', help='meson version (default: {0})'.format(meson_default_version),
-                        default=meson_default_version)
+    # fastotv_protocol
+    fastotv_protocol_grp = parser.add_mutually_exclusive_group()
+    fastotv_protocol_grp.add_argument('--with-fastotv-protocol',
+                                      help='build fastotv_protocol (default, version: git master)',
+                                      dest='with_fastotv_protocol',
+                                      action='store_true', default=True)
+    fastotv_protocol_grp.add_argument('--without-fastotv-protocol', help='build without fastotv_protocol',
+                                      dest='with_fastotv_protocol',
+                                      action='store_false',
+                                      default=False)
 
     # glib
     glib_grp = parser.add_mutually_exclusive_group()
@@ -335,6 +346,9 @@ if __name__ == "__main__":
         request.build_libev()
     if argv.with_common:
         request.build_common()
+
+    if argv.with_fastotv_protocol:
+        request.build_fastotv_protocol()
 
     # if argv.with_openssl:
     #    request.build_openssl(argv.openssl_version, True)

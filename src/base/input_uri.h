@@ -27,15 +27,20 @@ class InputUri : public common::serializer::JsonSerializer<InputUri> {
  public:
   typedef JsonSerializer<InputUri> base_class;
   typedef channel_id_t uri_id_t;
+  enum UserAgent { GSTREAMER = 0, VLC };
+  typedef UserAgent user_agent_t;
 
   InputUri();
-  explicit InputUri(uri_id_t id, const common::uri::Url& input);
+  explicit InputUri(uri_id_t id, const common::uri::Url& input, user_agent_t ua = GSTREAMER);
 
   uri_id_t GetID() const;
   void SetID(uri_id_t id);
 
   common::uri::Url GetInput() const;
   void SetInput(const common::uri::Url& uri);
+
+  user_agent_t GetUserAgent() const;
+  void SetUserAgent(user_agent_t agent);
 
   bool Equals(const InputUri& inf) const;
 
@@ -46,6 +51,7 @@ class InputUri : public common::serializer::JsonSerializer<InputUri> {
  private:
   uri_id_t id_;
   common::uri::Url input_;
+  user_agent_t user_agent_;
 };
 
 inline bool operator==(const InputUri& left, const InputUri& right) {
