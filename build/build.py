@@ -1,7 +1,16 @@
 #!/usr/bin/env python3
 import sys
 import os
-from pyfastogt import build_utils
+from pyfastogt import build_utils, system_info
+
+
+class BuildRequest(build_utils.BuildRequest):
+    def __init__(self, platform, arch_name, dir_path, prefix_path):
+        build_utils.BuildRequest.__init__(self, platform, arch_name, dir_path, prefix_path)
+
+    def build(self, license_key, license_algo, build_type):
+        self._build_via_cmake(['-DLICENSE_KEY=%s' % license_key, '-DHARDWARE_LICENSE_ALGO=%s' % license_algo],
+                              build_type)
 
 
 def print_usage():
@@ -35,9 +44,8 @@ if __name__ == "__main__":
     if argc > 4:
         prefix_path = sys.argv[4]
 
-    pwd = os.getcwd()
-    os.chdir('..')
-    build_utils.build_command_cmake(prefix_path,
-                                    ['-DLICENSE_KEY=%s' % license_key, '-DHARDWARE_LICENSE_ALGO=%s' % license_algo],
-                                    build_type)
-    os.chdir(pwd)
+    host_os = system_info.get_os()
+    arch_host_os = system_info.get_arch_name()
+
+    request = BuildRequest(host_os, arch_host_os, 'build_' + host_os, prefix_path)
+    request.build(license_key, license_algo, build_type)
