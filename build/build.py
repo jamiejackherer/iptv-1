@@ -10,7 +10,7 @@ class BuildRequest(build_utils.BuildRequest):
 
     def build(self, license_key, license_algo, build_type):
         self._build_via_cmake(['-DLICENSE_KEY=%s' % license_key, '-DHARDWARE_LICENSE_ALGO=%s' % license_algo],
-                              build_type)
+                              build_type, '../../')
 
 
 def print_usage():
