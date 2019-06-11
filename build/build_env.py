@@ -52,7 +52,7 @@ class BuildRequest(build_utils.BuildRequest):
         if platform_name == 'linux':
             distribution = system_info.linux_get_dist()
             if distribution == 'DEBIAN':
-                dep_libs = ['gcc', 'g++', 'git', 'make', 'autoconf', 'libtool', 'pkg-config', 'gettext',
+                dep_libs = ['gcc', 'g++', 'git', 'make', 'cmake', 'autoconf', 'libtool', 'pkg-config', 'gettext',
                             'libcairo2-dev', 'libssl-dev',
                             'libmount-dev', 'libdrm-dev', 'libsoup2.4-dev', 'libudev-dev', 'libjpeg-dev',
                             # 'freeglut3-dev',
@@ -62,7 +62,7 @@ class BuildRequest(build_utils.BuildRequest):
                             'ninja-build', 'intltool', 'liborc-0.4-dev', 'libxml2-dev', 'libx264-dev',
                             'libmp3lame-dev', 'librtmp-dev', 'libproxy-dev']
             elif distribution == 'RHEL':
-                dep_libs = ['gcc', 'gcc-c++', 'git', 'make', 'autoconf', 'libtool', 'cairo-gobject-devel',
+                dep_libs = ['gcc', 'gcc-c++', 'git', 'make', 'cmake', 'autoconf', 'libtool', 'cairo-gobject-devel',
                             'libmount-devel', 'openssl-devel',
                             'libxcb-devel', 'libdrm-devel', 'libsoup-devel', 'libx264-devel',  # 'libpciaccess-devel',
                             'libudev-devel', 'libjpeg-turbo-devel', 'zlib-devel', 'libffi-devel', 'pcre-devel', 'yasm',
@@ -132,7 +132,6 @@ class BuildRequest(build_utils.BuildRequest):
 if __name__ == "__main__":
     # openssl_default_version = '1.1.1b'
     glib_default_version = '2.60.2'
-    cmake_default_version = '3.1.0'
     meson_default_version = '0.50.1'
     gstreamer_default_version = '1.16.0'
     gst_plugins_base_default_version = gstreamer_default_version
@@ -151,15 +150,6 @@ if __name__ == "__main__":
                             action='store_true', default=True)
     system_grp.add_argument('--without-system', help='build without system dependencies', dest='with_system',
                             action='store_false', default=False)
-
-    # cmake
-    cmake_grp = parser.add_mutually_exclusive_group()
-    cmake_grp.add_argument('--with-cmake', help='build cmake (default, version:{0})'.format(meson_default_version),
-                           dest='with_cmake', action='store_true', default=True)
-    cmake_grp.add_argument('--without-cmake', help='build without cmake', dest='with_cmake', action='store_false',
-                           default=False)
-    parser.add_argument('--cmake-version', help='cmake version (default: {0})'.format(cmake_default_version),
-                        default=cmake_default_version)
 
     # meson
     meson_grp = parser.add_mutually_exclusive_group()
@@ -333,9 +323,6 @@ if __name__ == "__main__":
     request = BuildRequest(arg_platform, arg_architecture, 'build_' + arg_platform + '_env', arg_prefix_path)
     if argv.with_system:
         request.install_system()
-
-    if argv.with_cmake:
-        request.build_cmake(argv.cmake_version)
 
     if argv.with_meson:
         request.build_meson(argv.meson_version)
