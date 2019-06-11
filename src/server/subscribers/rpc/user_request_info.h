@@ -20,8 +20,6 @@
 
 #include "server/rpc/user_rpc_info.h"
 
-#include "protocol/types.h"
-
 namespace fastotv {
 namespace server {
 namespace rpc {

@@ -18,54 +18,63 @@
 
 #include "server/subscribers/commands.h"
 
+#include <fastotv/commands/commands.h>
+
 namespace iptv_cloud {
 namespace server {
 
-protocol::request_t PingRequest(protocol::sequance_id_t id, protocol::serializet_params_t params) {
-  protocol::request_t req;
+fastotv::protocol::request_t PingRequest(fastotv::protocol::sequance_id_t id,
+                                         fastotv::protocol::serializet_params_t params) {
+  fastotv::protocol::request_t req;
   req.id = id;
   req.method = SERVER_PING;
   req.params = params;
   return req;
 }
 
-protocol::response_t ActivateResponseSuccess(protocol::sequance_id_t id) {
-  return protocol::response_t::MakeMessage(id, common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage());
+fastotv::protocol::response_t ActivateResponseSuccess(fastotv::protocol::sequance_id_t id) {
+  return fastotv::protocol::response_t::MakeMessage(id,
+                                                    common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage());
 }
 
-protocol::response_t ActivateResponseFail(protocol::sequance_id_t id, const std::string& error_text) {
-  return protocol::response_t::MakeError(
+fastotv::protocol::response_t ActivateResponseFail(fastotv::protocol::sequance_id_t id, const std::string& error_text) {
+  return fastotv::protocol::response_t::MakeError(
       id, common::protocols::json_rpc::JsonRPCError::MakeInternalErrorFromText(error_text));
 }
 
-protocol::response_t PingResponseSuccess(protocol::sequance_id_t id) {
-  return protocol::response_t::MakeMessage(id, common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage());
+fastotv::protocol::response_t PingResponseSuccess(fastotv::protocol::sequance_id_t id) {
+  return fastotv::protocol::response_t::MakeMessage(id,
+                                                    common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage());
 }
 
-protocol::response_t GetServerInfoResponceSuccsess(protocol::sequance_id_t id, protocol::serializet_params_t params) {
-  return protocol::response_t::MakeMessage(id,
-                                           common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage(*params));
+fastotv::protocol::response_t GetServerInfoResponceSuccsess(fastotv::protocol::sequance_id_t id,
+                                                            fastotv::protocol::serializet_params_t params) {
+  return fastotv::protocol::response_t::MakeMessage(
+      id, common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage(*params));
 }
 
-protocol::response_t GetServerInfoResponceFail(protocol::sequance_id_t id, const std::string& error_text) {
-  return protocol::response_t::MakeError(
+fastotv::protocol::response_t GetServerInfoResponceFail(fastotv::protocol::sequance_id_t id,
+                                                        const std::string& error_text) {
+  return fastotv::protocol::response_t::MakeError(
       id, common::protocols::json_rpc::JsonRPCError::MakeInternalErrorFromText(error_text));
 }
 
-protocol::response_t GetChannelsResponceSuccsess(protocol::sequance_id_t id, protocol::serializet_params_t params) {
-  return protocol::response_t::MakeMessage(id,
-                                           common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage(*params));
+fastotv::protocol::response_t GetChannelsResponceSuccsess(fastotv::protocol::sequance_id_t id,
+                                                          fastotv::protocol::serializet_params_t params) {
+  return fastotv::protocol::response_t::MakeMessage(
+      id, common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage(*params));
 }
 
-protocol::response_t GetChannelsResponceFail(protocol::sequance_id_t id, const std::string& error_text) {
-  return protocol::response_t::MakeError(
+fastotv::protocol::response_t GetChannelsResponceFail(fastotv::protocol::sequance_id_t id,
+                                                      const std::string& error_text) {
+  return fastotv::protocol::response_t::MakeError(
       id, common::protocols::json_rpc::JsonRPCError::MakeInternalErrorFromText(error_text));
 }
 
-protocol::response_t GetRuntimeChannelInfoResponceSuccsess(protocol::sequance_id_t id,
-                                                           protocol::serializet_params_t params) {
-  return protocol::response_t::MakeMessage(id,
-                                           common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage(*params));
+fastotv::protocol::response_t GetRuntimeChannelInfoResponceSuccsess(fastotv::protocol::sequance_id_t id,
+                                                                    fastotv::protocol::serializet_params_t params) {
+  return fastotv::protocol::response_t::MakeMessage(
+      id, common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage(*params));
 }
 
 }  // namespace server

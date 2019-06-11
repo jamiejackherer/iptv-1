@@ -14,19 +14,17 @@
 
 #pragma once
 
-#include <common/libev/tcp/tcp_client.h>
+#include <fastotv/client.h>
 
 #include "server/subscribers/server_auth_info.h"
-
-#include "protocol/protocol.h"
 
 namespace iptv_cloud {
 namespace server {
 
-class SubscriberClient : public common::libev::tcp::TcpClient {
+class SubscriberClient : public fastotv::Client {
  public:
   typedef ServerAuthInfo host_info_t;
-  typedef common::libev::tcp::TcpClient base_class;
+  typedef fastotv::Client base_class;
 
   SubscriberClient(common::libev::IoLoop* server, const common::net::socket_info& info);
 
@@ -43,9 +41,9 @@ class SubscriberClient : public common::libev::tcp::TcpClient {
   fastotv::stream_id current_stream_id_;
 };
 
-class ProtocoledSubscriberClient : public protocol::ProtocolClient<SubscriberClient> {
+class ProtocoledSubscriberClient : public fastotv::protocol::ProtocolClient<SubscriberClient> {
  public:
-  typedef protocol::ProtocolClient<SubscriberClient> base_class;
+  typedef fastotv::protocol::ProtocolClient<SubscriberClient> base_class;
   ProtocoledSubscriberClient(common::libev::IoLoop* server, const common::net::socket_info& info);
 };
 
