@@ -25,7 +25,7 @@
 namespace {
 const char kFFmpegUA[] = "Lavf/58.27.103";
 const char kVLC[] = "VLC/3.0.1 LibVLC/3.0.1";
-}
+}  // namespace
 
 namespace iptv_cloud {
 namespace stream {

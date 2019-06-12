@@ -146,12 +146,16 @@ common::Error make_config(const utils::ArgsMap& config_args, Config** config) {
 
   uint8_t stream_type;
   if (!utils::ArgsGetValue(config_args, TYPE_FIELD, &stream_type)) {
-    return common::make_error("Define " TYPE_FIELD " variable and make it valid.");
+    return common::make_error("Define " TYPE_FIELD " variable and make it valid");
+  }
+
+  if (stream_type == PROXY) {
+    return common::make_error("Proxy streams not handled for now");
   }
 
   input_t input_urls;
   if (!read_input(config_args, &input_urls)) {
-    return common::make_error("Define " INPUT_FIELD " variable and make it valid.");
+    return common::make_error("Define " INPUT_FIELD " variable and make it valid");
   }
 
   bool is_multi_input = input_urls.size() > 1;
@@ -161,7 +165,7 @@ common::Error make_config(const utils::ArgsMap& config_args, Config** config) {
   output_t output_urls;
   if (!is_timeshift_and_rec) {
     if (!read_output(config_args, &output_urls)) {
-      return common::make_error("Define " OUTPUT_FIELD " variable and make it valid.");
+      return common::make_error("Define " OUTPUT_FIELD " variable and make it valid");
     }
   }
 
@@ -169,7 +173,7 @@ common::Error make_config(const utils::ArgsMap& config_args, Config** config) {
   if (!utils::ArgsGetValue(config_args, RESTART_ATTEMPTS_FIELD, &max_restart_attempts)) {
     max_restart_attempts = kDefaultRestartAttempts;
   }
-  CHECK(max_restart_attempts > 0) << "restart attempts must be grether than 0!";
+  CHECK(max_restart_attempts > 0) << "restart attempts must be grether than 0";
 
   Config conf(static_cast<StreamType>(stream_type), max_restart_attempts, input_urls, output_urls);
 

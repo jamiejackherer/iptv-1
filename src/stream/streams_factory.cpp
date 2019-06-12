@@ -44,7 +44,10 @@ IBaseStream* StreamsFactory::CreateStream(const Config* config,
                                           chunk_index_t start_chunk_index) {
   input_t input = config->GetInput();
   StreamType type = config->GetType();
-  if (type == RELAY) {
+  if (type == PROXY) {
+    NOTREACHED();
+    return nullptr;
+  } else if (type == RELAY) {
     const streams::RelayConfig* rconfig = static_cast<const streams::RelayConfig*>(config);
     if (input.size() > 1) {
       bool is_playlist = true;

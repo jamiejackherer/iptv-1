@@ -191,6 +191,9 @@ common::ErrnoError MakeStreamInfo(const utils::ArgsMap& config_args,
     return common::make_errno_error("Define " TYPE_FIELD " variable and make it valid.", EAGAIN);
   }
   lsha.type = static_cast<StreamType>(type);
+  if (lsha.type == PROXY) {
+    return common::make_errno_error("Proxy streams not handled for now", EINVAL);
+  }
 
   std::string lfeedback_dir;
   if (!utils::ArgsGetValue(config_args, FEEDBACK_DIR_FIELD, &lfeedback_dir)) {
@@ -1299,7 +1302,6 @@ void ProcessSlaveWrapper::AddStreamLine(const std::string& config) {
   common::logging::LOG_LEVEL logs_level;
   common::ErrnoError err = MakeStreamInfo(config_args, &sha, &feedback_dir, &logs_level);
   if (err) {
-    WARNING_LOG() << "Invalid config line in sync:(" << config << "), error: " << err->GetDescription();
     return;
   }
 
