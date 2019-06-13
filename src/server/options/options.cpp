@@ -139,7 +139,7 @@ Validity validate_audio_codec(const std::string& value) {
 }
 
 Validity validate_type(const std::string& value) {
-  return validate_range<uint8_t>(value, iptv_cloud::StreamType::RELAY, iptv_cloud::StreamType::SCREEN, false);
+  return validate_range<uint8_t>(value, iptv_cloud::StreamType::PROXY, iptv_cloud::StreamType::SCREEN, false);
 }
 
 Validity validate_log_level(const std::string& value) {
