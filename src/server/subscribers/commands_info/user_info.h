@@ -26,7 +26,7 @@
 namespace iptv_cloud {
 namespace server {
 
-enum Status { BANNED = 0, ACTIVE = 1 };
+enum Status { NO_ACTIVE = 0, ACTIVE = 1, BANNED = 2 };
 
 class UserInfo : public common::serializer::JsonSerializer<UserInfo> {
  public:

@@ -231,12 +231,18 @@ common::ErrnoError SubscribersHandler::HandleRequestClientActivate(ProtocoledSub
     }
 
     if (!uauth.IsValid()) {
+      const std::string error_str = "User invalid user";
+      fastotv::protocol::response_t resp = ActivateResponseFail(req->id, error_str);
+      client->WriteResponce(resp);
       return common::make_errno_error(EAGAIN);
     }
 
     UserInfo registered_user;
     common::Error err_find = finder_->FindUser(uauth, &registered_user);
     if (err_find) {
+      const std::string err_str = err_find->GetDescription();
+      fastotv::protocol::response_t resp = ActivateResponseFail(req->id, err_str);
+      client->WriteResponce(resp);
       return common::make_errno_error(EAGAIN);
     }
 
