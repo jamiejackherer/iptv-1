@@ -224,26 +224,26 @@ common::ErrnoError SubscribersHandler::HandleRequestClientActivate(ProtocoledSub
     common::Error err_des = uauth.DeSerialize(jauth);
     json_object_put(jauth);
     if (err_des) {
-      const std::string err_str = err_des->GetDescription();
-      fastotv::protocol::response_t resp = ActivateResponseFail(req->id, err_str);
+      const std::string error_str = err_des->GetDescription();
+      fastotv::protocol::response_t resp = ActivateResponseFail(req->id, error_str);
       client->WriteResponce(resp);
-      return common::make_errno_error(err_str, EAGAIN);
+      return common::make_errno_error(error_str, EINVAL);
     }
 
     if (!uauth.IsValid()) {
-      const std::string error_str = "User invalid user";
+      const std::string error_str = "Invalid user";
       fastotv::protocol::response_t resp = ActivateResponseFail(req->id, error_str);
       client->WriteResponce(resp);
-      return common::make_errno_error(EAGAIN);
+      return common::make_errno_error(error_str, EINVAL);
     }
 
     UserInfo registered_user;
     common::Error err_find = finder_->FindUser(uauth, &registered_user);
     if (err_find) {
-      const std::string err_str = err_find->GetDescription();
-      fastotv::protocol::response_t resp = ActivateResponseFail(req->id, err_str);
+      const std::string error_str = err_find->GetDescription();
+      fastotv::protocol::response_t resp = ActivateResponseFail(req->id, error_str);
       client->WriteResponce(resp);
-      return common::make_errno_error(EAGAIN);
+      return common::make_errno_error(error_str, EINVAL);
     }
 
     const fastotv::device_id_t dev = uauth.GetDeviceID();
