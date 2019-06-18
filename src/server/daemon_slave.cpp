@@ -47,12 +47,12 @@ namespace {
 const size_t kMaxSizeLogFile = 10 * 1024 * 1024;  // 10 MB
 
 bool create_license_key(std::string* license_key) {
-#if HARDWARE_LICENSE_ALGO == 0
+#if LICENSE_ALGO == 0
   static const common::license::ALGO_TYPE license_algo = common::license::HDD;
-#elif HARDWARE_LICENSE_ALGO == 1
+#elif LICENSE_ALGO == 1
   static const common::license::ALGO_TYPE license_algo = common::license::MACHINE_ID;
 #else
-#error Unknown hardware license algo used
+#error Unknown license algo used
 #endif
 
   if (!license_key) {
