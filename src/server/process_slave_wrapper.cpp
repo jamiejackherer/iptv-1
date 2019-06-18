@@ -638,21 +638,21 @@ common::ErrnoError ProcessSlaveWrapper::DaemonDataReceived(ProtocoledDaemonClien
   }
 
   if (req) {
-    INFO_LOG() << "Received daemon request: " << input_command;
+    DEBUG_LOG() << "Received daemon request: " << input_command;
     err = HandleRequestServiceCommand(dclient, req);
     if (err) {
       DEBUG_MSG_ERROR(err, common::logging::LOG_LEVEL_ERR);
     }
     delete req;
   } else if (resp) {
-    INFO_LOG() << "Received daemon responce: " << input_command;
+    DEBUG_LOG() << "Received daemon responce: " << input_command;
     err = HandleResponceServiceCommand(dclient, resp);
     if (err) {
       DEBUG_MSG_ERROR(err, common::logging::LOG_LEVEL_ERR);
     }
     delete resp;
   } else {
-    NOTREACHED();
+    DNOTREACHED();
     return common::make_errno_error("Invalid command type.", EINVAL);
   }
 
