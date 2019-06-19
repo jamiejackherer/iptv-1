@@ -28,47 +28,43 @@ namespace iptv_cloud {
 namespace server {
 
 VodsHandler::VodsHandler(IHttpRequestsObserver* observer)
-    : vods_root_(vods_directory_path_t::MakeHomeDir()), observer_(observer) {}
+    : base_class(), vods_root_(vods_directory_path_t::MakeHomeDir()), observer_(observer) {}
 
 void VodsHandler::SetVodsRoot(const vods_directory_path_t& vods_root) {
   vods_root_ = vods_root;
 }
 
 void VodsHandler::PreLooped(common::libev::IoLoop* server) {
-  UNUSED(server);
+  base_class::PreLooped(server);
 }
 
 void VodsHandler::Accepted(common::libev::IoClient* client) {
-  UNUSED(client);
+  base_class::Accepted(client);
 }
 
 void VodsHandler::Moved(common::libev::IoLoop* server, common::libev::IoClient* client) {
-  UNUSED(server);
-  UNUSED(client);
+  base_class::Moved(server, client);
 }
 
 void VodsHandler::Closed(common::libev::IoClient* client) {
-  UNUSED(client);
+  base_class::Closed(client);
 }
 
 void VodsHandler::TimerEmited(common::libev::IoLoop* server, common::libev::timer_id_t id) {
-  UNUSED(server);
-  UNUSED(id);
+  base_class::TimerEmited(server, id);
 }
 
 #if LIBEV_CHILD_ENABLE
 void VodsHandler::Accepted(common::libev::IoChild* child) {
-  UNUSED(child);
+  base_class::Accepted(child);
 }
 
 void VodsHandler::Moved(common::libev::IoLoop* server, common::libev::IoChild* child) {
-  UNUSED(server);
-  UNUSED(child);
+  base_class::Moved(server, child);
 }
 
 void VodsHandler::ChildStatusChanged(common::libev::IoChild* child, int status) {
-  UNUSED(child);
-  UNUSED(status);
+  base_class::ChildStatusChanged(child, status);
 }
 #endif
 
@@ -79,19 +75,20 @@ void VodsHandler::DataReceived(common::libev::IoClient* client) {
   if ((errn && errn->GetErrorCode() != EAGAIN) || nread == 0) {
     client->Close();
     delete client;
-    return;
+    return base_class::DataReceived(client);
   }
 
   VodsClient* hclient = static_cast<server::VodsClient*>(client);
   ProcessReceived(hclient, buff, nread);
+  base_class::DataReceived(client);
 }
 
 void VodsHandler::DataReadyToWrite(common::libev::IoClient* client) {
-  UNUSED(client);
+  base_class::DataReadyToWrite(client);
 }
 
 void VodsHandler::PostLooped(common::libev::IoLoop* server) {
-  UNUSED(server);
+  base_class::PostLooped(server);
 }
 
 void VodsHandler::ProcessReceived(VodsClient* hclient, const char* request, size_t req_len) {

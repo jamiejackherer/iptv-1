@@ -19,11 +19,30 @@
 #include <common/net/types.h>
 #include <common/serializer/json_serializer.h>
 
+#include <fastotv/client_server_types.h>
+
 #include "utils/utils.h"
 
 namespace iptv_cloud {
 namespace server {
 namespace service {
+
+class OnlineUsers : public common::serializer::JsonSerializer<OnlineUsers> {
+ public:
+  typedef JsonSerializer<OnlineUsers> base_class;
+  OnlineUsers();
+  explicit OnlineUsers(size_t daemon, size_t http, size_t vods, size_t subscriber);
+
+ protected:
+  common::Error DoDeSerialize(json_object* serialized) override;
+  common::Error SerializeFields(json_object* out) const override;
+
+ private:
+  size_t daemon_;
+  size_t http_;
+  size_t vods_;
+  size_t subscriber_;
+};
 
 class ServerInfo : public common::serializer::JsonSerializer<ServerInfo> {
  public:
@@ -34,19 +53,21 @@ class ServerInfo : public common::serializer::JsonSerializer<ServerInfo> {
                       const std::string& uptime,
                       const utils::MemoryShot& mem_shot,
                       const utils::HddShot& hdd_shot,
-                      uint64_t net_bytes_recv,
-                      uint64_t net_bytes_send,
+                      fastotv::bandwidth_t net_bytes_recv,
+                      fastotv::bandwidth_t net_bytes_send,
                       const utils::SysinfoShot& sys,
-                      time_t timestamp);
+                      time_t timestamp,
+                      const OnlineUsers& online_users);
 
   int GetCpuLoad() const;
   int GetGpuLoad() const;
   std::string GetUptime() const;
   utils::MemoryShot GetMemShot() const;
   utils::HddShot GetHddShot() const;
-  uint64_t GetNetBytesRecv() const;
-  uint64_t GetNetBytesSend() const;
+  fastotv::bandwidth_t GetNetBytesRecv() const;
+  fastotv::bandwidth_t GetNetBytesSend() const;
   time_t GetTimestamp() const;
+  OnlineUsers GetOnlineUsers() const;
 
  protected:
   common::Error DoDeSerialize(json_object* serialized) override;
@@ -58,10 +79,11 @@ class ServerInfo : public common::serializer::JsonSerializer<ServerInfo> {
   std::string uptime_;
   utils::MemoryShot mem_shot_;
   utils::HddShot hdd_shot_;
-  uint64_t net_bytes_recv_;
-  uint64_t net_bytes_send_;
+  fastotv::bandwidth_t net_bytes_recv_;
+  fastotv::bandwidth_t net_bytes_send_;
   time_t current_ts_;
   utils::SysinfoShot sys_shot_;
+  OnlineUsers online_users_;
 };
 
 class FullServiceInfo : public ServerInfo {

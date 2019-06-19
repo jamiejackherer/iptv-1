@@ -35,7 +35,8 @@ namespace iptv_cloud {
 namespace server {
 
 SubscribersHandler::SubscribersHandler(ISubscribeFinder* finder, const common::net::HostAndPort& bandwidth_host)
-    : finder_(finder),
+    : base_class(),
+      finder_(finder),
       id_(0),
       ping_client_id_timer_(INVALID_TIMER_ID),
       bandwidth_host_(bandwidth_host),
@@ -45,11 +46,11 @@ SubscribersHandler::~SubscribersHandler() {}
 
 void SubscribersHandler::PreLooped(common::libev::IoLoop* server) {
   ping_client_id_timer_ = server->CreateTimer(ping_timeout_clients, true);
+  base_class::PostLooped(server);
 }
 
 void SubscribersHandler::Moved(common::libev::IoLoop* server, common::libev::IoClient* client) {
-  UNUSED(server);
-  UNUSED(client);
+  base_class::Moved(server, client);
 }
 
 void SubscribersHandler::PostLooped(common::libev::IoLoop* server) {
@@ -57,6 +58,7 @@ void SubscribersHandler::PostLooped(common::libev::IoLoop* server) {
     server->RemoveTimer(ping_client_id_timer_);
     ping_client_id_timer_ = INVALID_TIMER_ID;
   }
+  base_class::PostLooped(server);
 }
 
 void SubscribersHandler::TimerEmited(common::libev::IoLoop* server, common::libev::timer_id_t id) {
@@ -87,26 +89,25 @@ void SubscribersHandler::TimerEmited(common::libev::IoLoop* server, common::libe
       }
     }
   }
+  base_class::TimerEmited(server, id);
 }
 
 #if LIBEV_CHILD_ENABLE
 void SubscribersHandler::Accepted(common::libev::IoChild* child) {
-  UNUSED(child);
+  base_class::Accepted(child);
 }
 
 void SubscribersHandler::Moved(common::libev::IoLoop* server, common::libev::IoChild* child) {
-  UNUSED(server);
-  UNUSED(child);
+  base_class::Moved(server, child);
 }
 
 void SubscribersHandler::ChildStatusChanged(common::libev::IoChild* client, int status) {
-  UNUSED(client);
-  UNUSED(status);
+  base_class::ChildStatusChanged(client, status);
 }
 #endif
 
 void SubscribersHandler::Accepted(common::libev::IoClient* client) {
-  UNUSED(client);
+  base_class::Accepted(client);
 }
 
 void SubscribersHandler::Closed(common::libev::IoClient* client) {
@@ -114,10 +115,11 @@ void SubscribersHandler::Closed(common::libev::IoClient* client) {
   const ServerAuthInfo server_user_auth = iclient->GetServerHostInfo();
   common::Error unreg_err = UnRegisterInnerConnectionByHost(iclient);
   if (unreg_err) {
-    return;
+    return base_class::Closed(client);
   }
 
   INFO_LOG() << "Byu registered user: " << server_user_auth.GetLogin();
+  base_class::Closed(client);
 }
 
 void SubscribersHandler::DataReceived(common::libev::IoClient* client) {
@@ -129,14 +131,15 @@ void SubscribersHandler::DataReceived(common::libev::IoClient* client) {
     err = client->Close();
     DCHECK(!err) << "Close client error: " << err->GetDescription();
     delete client;
-    return;
+    return base_class::DataReceived(client);
   }
 
   HandleInnerDataReceived(iclient, buff);
+  base_class::DataReceived(client);
 }
 
 void SubscribersHandler::DataReadyToWrite(common::libev::IoClient* client) {
-  UNUSED(client);
+  base_class::DataReadyToWrite(client);
 }
 
 common::Error SubscribersHandler::RegisterInnerConnectionByHost(const ServerAuthInfo& info,

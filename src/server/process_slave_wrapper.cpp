@@ -491,19 +491,19 @@ void ProcessSlaveWrapper::PreLooped(common::libev::IoLoop* server) {
   ping_client_timer_ = server->CreateTimer(ping_timeout_clients_seconds, true);
   node_stats_timer_ = server->CreateTimer(node_stats_send_seconds, true);
   cleanup_files_timer_ = server->CreateTimer(config_.ttl_files_, true);
+  IServerHandler::PreLooped(server);
 }
 
 void ProcessSlaveWrapper::Accepted(common::libev::IoClient* client) {
-  UNUSED(client);  // DaemonClient
+  IServerHandler::Accepted(client);
 }
 
 void ProcessSlaveWrapper::Moved(common::libev::IoLoop* server, common::libev::IoClient* client) {
-  UNUSED(server);
-  UNUSED(client);
+  IServerHandler::Moved(server, client);
 }
 
 void ProcessSlaveWrapper::Closed(common::libev::IoClient* client) {
-  UNUSED(client);
+  IServerHandler::Closed(client);
 }
 
 void ProcessSlaveWrapper::TimerEmited(common::libev::IoLoop* server, common::libev::timer_id_t id) {
@@ -546,15 +546,15 @@ void ProcessSlaveWrapper::TimerEmited(common::libev::IoLoop* server, common::lib
     http_server_->Stop();
     loop_->Stop();
   }
+  IServerHandler::TimerEmited(server, id);
 }
 
 void ProcessSlaveWrapper::Accepted(common::libev::IoChild* child) {
-  UNUSED(child);
+  IServerHandler::Accepted(child);
 }
 
 void ProcessSlaveWrapper::Moved(common::libev::IoLoop* server, common::libev::IoChild* child) {
-  UNUSED(server);
-  UNUSED(child);
+  IServerHandler::Moved(server, child);
 }
 
 void ProcessSlaveWrapper::ChildStatusChanged(common::libev::IoChild* child, int status) {
@@ -589,10 +589,11 @@ void ProcessSlaveWrapper::ChildStatusChanged(common::libev::IoChild* child, int 
   if (err_ser) {
     const std::string err_str = err_ser->GetDescription();
     WARNING_LOG() << "Failed to generate strean exit message: " << err_str;
-    return;
+    return IServerHandler::ChildStatusChanged(child, status);
   }
 
   BroadcastClients(QuitStatusStreamBroadcast(quit_json));
+  IServerHandler::ChildStatusChanged(child, status);
 }
 
 Child* ProcessSlaveWrapper::FindChildByID(stream_id_t cid) const {
@@ -724,10 +725,11 @@ void ProcessSlaveWrapper::DataReceived(common::libev::IoClient* client) {
   } else {
     NOTREACHED();
   }
+  IServerHandler::DataReceived(client);
 }
 
 void ProcessSlaveWrapper::DataReadyToWrite(common::libev::IoClient* client) {
-  UNUSED(client);  // DaemonClient
+  IServerHandler::DataReadyToWrite(client);
 }
 
 void ProcessSlaveWrapper::PostLooped(common::libev::IoLoop* server) {
@@ -745,6 +747,7 @@ void ProcessSlaveWrapper::PostLooped(common::libev::IoLoop* server) {
     server->RemoveTimer(node_stats_timer_);
     node_stats_timer_ = INVALID_TIMER_ID;
   }
+  IServerHandler::PostLooped(server);
 }
 
 void ProcessSlaveWrapper::OnHttpRequest(common::libev::http::HttpClient* client, const file_path_t& file) {
@@ -1526,8 +1529,11 @@ std::string ProcessSlaveWrapper::MakeServiceStats(bool full_stat) const {
   }
   node_stats_->timestamp = current_time;
 
+  service::OnlineUsers online(GetOnlineClients(), static_cast<HttpHandler*>(http_handler_)->GetOnlineClients(),
+                              static_cast<HttpHandler*>(vods_handler_)->GetOnlineClients(),
+                              static_cast<HttpHandler*>(subscribers_handler_)->GetOnlineClients());
   service::ServerInfo stat(cpu_load * 100, node_stats_->gpu_load, uptime_str, mem_shot, hdd_shot, bytes_recv / ts_diff,
-                           bytes_send / ts_diff, sshot, current_time);
+                           bytes_send / ts_diff, sshot, current_time, online);
 
   std::string node_stats;
   if (full_stat) {

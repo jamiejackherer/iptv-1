@@ -17,13 +17,13 @@
 #include <map>
 #include <string>
 
-#include <common/libev/io_loop_observer.h>
 #include <common/net/types.h>
 
 #include "base/types.h"
 #include "protocol/types.h"
 #include "utils/arg_reader.h"
 
+#include "server/base/iserver_handler.h"
 #include "server/commands_info/stream/start_info.h"
 #include "server/config.h"
 #include "server/ihttp_requests_observer.h"
@@ -37,7 +37,7 @@ class ProtocoledPipeClient;
 }
 class ProtocoledDaemonClient;
 
-class ProcessSlaveWrapper : public common::libev::IoLoopObserver, public server::IHttpRequestsObserver {
+class ProcessSlaveWrapper : public base::IServerHandler, public server::IHttpRequestsObserver {
  public:
   enum { node_stats_send_seconds = 10, ping_timeout_clients_seconds = 60, cleanup_seconds = 3 };
   typedef utils::ArgsMap serialized_stream_t;

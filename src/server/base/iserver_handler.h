@@ -14,24 +14,18 @@
 
 #pragma once
 
-#include <common/file_system/path.h>
-
-#include "server/base/iserver_handler.h"
+#include <common/libev/io_loop_observer.h>
 
 namespace iptv_cloud {
 namespace server {
+namespace base {
 
-class HttpClient;
-class IHttpRequestsObserver;
-
-class HttpHandler : public base::IServerHandler {
+class IServerHandler : public common::libev::IoLoopObserver {
  public:
-  enum { BUF_SIZE = 4096 };
-  typedef base::IServerHandler base_class;
-  typedef common::file_system::ascii_directory_string_path http_directory_path_t;
-  explicit HttpHandler(IHttpRequestsObserver* observer);
+  typedef std::atomic<size_t> online_clients_t;
+  IServerHandler();
 
-  void SetHttpRoot(const http_directory_path_t& http_root);
+  size_t GetOnlineClients() const;
 
   void PreLooped(common::libev::IoLoop* server) override;
 
@@ -51,11 +45,9 @@ class HttpHandler : public base::IServerHandler {
   void PostLooped(common::libev::IoLoop* server) override;
 
  private:
-  void ProcessReceived(HttpClient* hclient, const char* request, size_t req_len);
-
-  http_directory_path_t http_root_;
-  IHttpRequestsObserver* observer_;
+  online_clients_t online_clients_;
 };
 
+}  // namespace base
 }  // namespace server
 }  // namespace iptv_cloud

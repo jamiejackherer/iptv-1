@@ -30,15 +30,65 @@
 #define STATISTIC_SERVICE_INFO_BANDWIDTH_IN_FIELD "bandwidth_in"
 #define STATISTIC_SERVICE_INFO_BANDWIDTH_OUT_FIELD "bandwidth_out"
 
+#define STATISTIC_SERVICE_INFO_ONLINE_USERS_FIELD "online_users"
+
 #define FULL_SERVICE_INFO_VERSION_FIELD "version"
 #define FULL_SERVICE_INFO_HTTP_HOST_FIELD "http_host"
 #define FULL_SERVICE_INFO_VODS_HOST_FIELD "vods_host"
 #define FULL_SERVICE_INFO_SUBSCRIBERS_HOST_FIELD "subscribers_host"
 #define FULL_SERVICE_INFO_BANDWIDTH_HOST_FIELD "bandwidth_host"
 
+#define ONLINE_USERS_DAEMON_FIELD "daemon"
+#define ONLINE_USERS_HTTP_FIELD "http"
+#define ONLINE_USERS_VODS_FIELD "vods"
+#define ONLINE_USERS_SUBSCRIBER_FIELD "subscriber"
+
 namespace iptv_cloud {
 namespace server {
 namespace service {
+
+OnlineUsers::OnlineUsers() : OnlineUsers(0, 0, 0, 0) {}
+
+OnlineUsers::OnlineUsers(size_t daemon, size_t http, size_t vods, size_t subscriber)
+    : daemon_(daemon), http_(http), vods_(vods), subscriber_(subscriber) {}
+
+common::Error OnlineUsers::DoDeSerialize(json_object* serialized) {
+  OnlineUsers inf;
+  json_object* jdaemon = nullptr;
+  json_bool jdaemon_exists = json_object_object_get_ex(serialized, ONLINE_USERS_DAEMON_FIELD, &jdaemon);
+  if (jdaemon_exists) {
+    inf.daemon_ = json_object_get_int64(jdaemon);
+  }
+
+  json_object* jhttp = nullptr;
+  json_bool jhttp_exists = json_object_object_get_ex(serialized, ONLINE_USERS_HTTP_FIELD, &jhttp);
+  if (jhttp_exists) {
+    inf.http_ = json_object_get_int64(jhttp);
+  }
+
+  json_object* jvods = nullptr;
+  json_bool jvods_exists = json_object_object_get_ex(serialized, ONLINE_USERS_VODS_FIELD, &jvods);
+  if (jvods_exists) {
+    inf.vods_ = json_object_get_int64(jvods);
+  }
+
+  json_object* jsubscriber = nullptr;
+  json_bool jsubscriber_exists = json_object_object_get_ex(serialized, ONLINE_USERS_SUBSCRIBER_FIELD, &jsubscriber);
+  if (jsubscriber_exists) {
+    inf.subscriber_ = json_object_get_int64(jsubscriber);
+  }
+
+  *this = inf;
+  return common::Error();
+}
+
+common::Error OnlineUsers::SerializeFields(json_object* out) const {
+  json_object_object_add(out, ONLINE_USERS_DAEMON_FIELD, json_object_new_int64(daemon_));
+  json_object_object_add(out, ONLINE_USERS_HTTP_FIELD, json_object_new_int64(http_));
+  json_object_object_add(out, ONLINE_USERS_VODS_FIELD, json_object_new_int64(vods_));
+  json_object_object_add(out, ONLINE_USERS_SUBSCRIBER_FIELD, json_object_new_int64(subscriber_));
+  return common::Error();
+}
 
 ServerInfo::ServerInfo()
     : base_class(),
@@ -50,7 +100,8 @@ ServerInfo::ServerInfo()
       net_bytes_recv_(),
       net_bytes_send_(),
       current_ts_(),
-      sys_shot_() {}
+      sys_shot_(),
+      online_users_() {}
 
 ServerInfo::ServerInfo(int cpu_load,
                        int gpu_load,
@@ -60,7 +111,8 @@ ServerInfo::ServerInfo(int cpu_load,
                        uint64_t net_bytes_recv,
                        uint64_t net_bytes_send,
                        const utils::SysinfoShot& sys,
-                       time_t timestamp)
+                       time_t timestamp,
+                       const OnlineUsers& online_users)
     : base_class(),
       cpu_load_(cpu_load),
       gpu_load_(gpu_load),
@@ -70,9 +122,17 @@ ServerInfo::ServerInfo(int cpu_load,
       net_bytes_recv_(net_bytes_recv),
       net_bytes_send_(net_bytes_send),
       current_ts_(timestamp),
-      sys_shot_(sys) {}
+      sys_shot_(sys),
+      online_users_(online_users) {}
 
 common::Error ServerInfo::SerializeFields(json_object* out) const {
+  json_object* obj = json_object_new_object();
+  common::Error err = online_users_.Serialize(&obj);
+  if (err) {
+    json_object_put(obj);
+    return err;
+  }
+
   json_object_object_add(out, STATISTIC_SERVICE_INFO_CPU_FIELD, json_object_new_int(cpu_load_));
   json_object_object_add(out, STATISTIC_SERVICE_INFO_GPU_FIELD, json_object_new_int(gpu_load_));
   json_object_object_add(out, STATISTIC_SERVICE_INFO_LOAD_AVERAGE_FIELD, json_object_new_string(uptime_.c_str()));
@@ -88,11 +148,21 @@ common::Error ServerInfo::SerializeFields(json_object* out) const {
   json_object_object_add(out, STATISTIC_SERVICE_INFO_BANDWIDTH_OUT_FIELD, json_object_new_int64(net_bytes_send_));
   json_object_object_add(out, STATISTIC_SERVICE_INFO_UPTIME_FIELD, json_object_new_int64(sys_shot_.uptime));
   json_object_object_add(out, STATISTIC_SERVICE_INFO_TIMESTAMP_FIELD, json_object_new_int64(current_ts_));
+  json_object_object_add(out, STATISTIC_SERVICE_INFO_ONLINE_USERS_FIELD, obj);
   return common::Error();
 }
 
 common::Error ServerInfo::DoDeSerialize(json_object* serialized) {
   ServerInfo inf;
+
+  json_object* jonline = nullptr;
+  json_bool jonline_exists = json_object_object_get_ex(serialized, STATISTIC_SERVICE_INFO_ONLINE_USERS_FIELD, &jonline);
+  if (jonline_exists) {
+    common::Error err = inf.online_users_.DeSerialize(jonline);
+    if (err) {
+      return err;
+    }
+  }
 
   json_object* jcpu_load = nullptr;
   json_bool jcpu_load_exists = json_object_object_get_ex(serialized, STATISTIC_SERVICE_INFO_CPU_FIELD, &jcpu_load);
@@ -196,16 +266,20 @@ utils::HddShot ServerInfo::GetHddShot() const {
   return hdd_shot_;
 }
 
-uint64_t ServerInfo::GetNetBytesRecv() const {
+fastotv::bandwidth_t ServerInfo::GetNetBytesRecv() const {
   return net_bytes_recv_;
 }
 
-uint64_t ServerInfo::GetNetBytesSend() const {
+fastotv::bandwidth_t ServerInfo::GetNetBytesSend() const {
   return net_bytes_send_;
 }
 
 time_t ServerInfo::GetTimestamp() const {
   return current_ts_;
+}
+
+OnlineUsers ServerInfo::GetOnlineUsers() const {
+  return online_users_;
 }
 
 FullServiceInfo::FullServiceInfo() : base_class(), http_host_(), proj_ver_(PROJECT_VERSION_HUMAN) {}

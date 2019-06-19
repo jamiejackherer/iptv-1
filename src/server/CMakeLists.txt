@@ -118,6 +118,7 @@ SET(SERVER_SUBSCRIBERS_SOURCES
 )
 
 SET(DAEMONS_HEADERS
+  ${CMAKE_SOURCE_DIR}/src/server/base/iserver_handler.h
   ${CMAKE_SOURCE_DIR}/src/server/sync_finder.h
   ${CMAKE_SOURCE_DIR}/src/server/child_stream.h
   ${CMAKE_SOURCE_DIR}/src/server/process_slave_wrapper.h
@@ -134,6 +135,7 @@ SET(DAEMONS_HEADERS
   ${DAEMONS_HEADERS_COMANDS_INFO}
 )
 SET(DAEMONS_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/server/base/iserver_handler.cpp
   ${CMAKE_SOURCE_DIR}/src/server/sync_finder.cpp
   ${CMAKE_SOURCE_DIR}/src/server/child_stream.cpp
   ${CMAKE_SOURCE_DIR}/src/server/process_slave_wrapper.cpp

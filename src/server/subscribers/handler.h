@@ -23,14 +23,14 @@
 #include <unordered_map>
 #include <vector>
 
-#include <common/error.h>                   // for Error
-#include <common/libev/io_loop_observer.h>  // for IoLoopObserver
-#include <common/libev/types.h>             // for timer_id_t
-#include <common/macros.h>                  // for WARN_UNUSED_RESULT
+#include <common/error.h>        // for Error
+#include <common/libev/types.h>  // for timer_id_t
+#include <common/macros.h>       // for WARN_UNUSED_RESULT
 #include <common/net/types.h>
 
 #include <fastotv/protocol/types.h>
 
+#include "server/base/iserver_handler.h"
 #include "server/subscribers/rpc/user_rpc_info.h"
 
 namespace iptv_cloud {
@@ -39,8 +39,9 @@ class ProtocoledSubscriberClient;
 class ISubscribeFinder;
 class ServerAuthInfo;
 
-class SubscribersHandler : public common::libev::IoLoopObserver {
+class SubscribersHandler : public base::IServerHandler {
  public:
+  typedef base::IServerHandler base_class;
   typedef ProtocoledSubscriberClient client_t;
   typedef std::unordered_map<fastotv::user_id_t, std::vector<client_t*>> inner_connections_t;
   enum {

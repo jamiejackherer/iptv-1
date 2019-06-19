@@ -15,7 +15,8 @@
 #pragma once
 
 #include <common/file_system/path.h>
-#include <common/libev/io_loop_observer.h>
+
+#include "server/base/iserver_handler.h"
 
 namespace iptv_cloud {
 namespace server {
@@ -23,9 +24,10 @@ namespace server {
 class VodsClient;
 class IHttpRequestsObserver;
 
-class VodsHandler : public common::libev::IoLoopObserver {
+class VodsHandler : public base::IServerHandler {
  public:
   enum { BUF_SIZE = 4096 };
+  typedef base::IServerHandler base_class;
   typedef common::file_system::ascii_directory_string_path vods_directory_path_t;
   explicit VodsHandler(IHttpRequestsObserver* observer);
 

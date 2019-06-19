@@ -28,47 +28,43 @@ namespace iptv_cloud {
 namespace server {
 
 HttpHandler::HttpHandler(IHttpRequestsObserver* observer)
-    : http_root_(http_directory_path_t::MakeHomeDir()), observer_(observer) {}
+    : base_class(), http_root_(http_directory_path_t::MakeHomeDir()), observer_(observer) {}
 
 void HttpHandler::SetHttpRoot(const http_directory_path_t& http_root) {
   http_root_ = http_root;
 }
 
 void HttpHandler::PreLooped(common::libev::IoLoop* server) {
-  UNUSED(server);
+  base_class::PreLooped(server);
 }
 
 void HttpHandler::Accepted(common::libev::IoClient* client) {
-  UNUSED(client);
+  base_class::Accepted(client);
 }
 
 void HttpHandler::Moved(common::libev::IoLoop* server, common::libev::IoClient* client) {
-  UNUSED(server);
-  UNUSED(client);
+  base_class::Moved(server, client);
 }
 
 void HttpHandler::Closed(common::libev::IoClient* client) {
-  UNUSED(client);
+  base_class::Closed(client);
 }
 
 void HttpHandler::TimerEmited(common::libev::IoLoop* server, common::libev::timer_id_t id) {
-  UNUSED(server);
-  UNUSED(id);
+  base_class::TimerEmited(server, id);
 }
 
 #if LIBEV_CHILD_ENABLE
 void HttpHandler::Accepted(common::libev::IoChild* child) {
-  UNUSED(child);
+  base_class::Accepted(child);
 }
 
 void HttpHandler::Moved(common::libev::IoLoop* server, common::libev::IoChild* child) {
-  UNUSED(server);
-  UNUSED(child);
+  base_class::Moved(server, child);
 }
 
 void HttpHandler::ChildStatusChanged(common::libev::IoChild* child, int status) {
-  UNUSED(child);
-  UNUSED(status);
+  base_class::ChildStatusChanged(child, status);
 }
 #endif
 
@@ -79,19 +75,20 @@ void HttpHandler::DataReceived(common::libev::IoClient* client) {
   if ((errn && errn->GetErrorCode() != EAGAIN) || nread == 0) {
     client->Close();
     delete client;
-    return;
+    return base_class::DataReceived(client);
   }
 
   HttpClient* hclient = static_cast<server::HttpClient*>(client);
   ProcessReceived(hclient, buff, nread);
+  base_class::DataReceived(client);
 }
 
 void HttpHandler::DataReadyToWrite(common::libev::IoClient* client) {
-  UNUSED(client);
+  base_class::DataReadyToWrite(client);
 }
 
 void HttpHandler::PostLooped(common::libev::IoLoop* server) {
-  UNUSED(server);
+  base_class::PostLooped(server);
 }
 
 void HttpHandler::ProcessReceived(HttpClient* hclient, const char* request, size_t req_len) {
