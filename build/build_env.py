@@ -53,7 +53,7 @@ class BuildRequest(build_utils.BuildRequest):
             distribution = system_info.linux_get_dist()
             if distribution == 'DEBIAN':
                 dep_libs = ['gcc', 'g++', 'git', 'make', 'autoconf', 'libtool', 'pkg-config', 'gettext',
-                            'libcairo2-dev', 'libssl-dev',
+                            'libcairo2-dev', 'libssl-dev', 'libblkid-dev',
                             'libmount-dev', 'libdrm-dev', 'libsoup2.4-dev', 'libudev-dev', 'libjpeg-dev',
                             # 'freeglut3-dev',
                             # 'libegl1-mesa-dev',
@@ -132,7 +132,7 @@ class BuildRequest(build_utils.BuildRequest):
 if __name__ == "__main__":
     # openssl_default_version = '1.1.1b'
     glib_default_version = '2.60.2'
-    cmake_default_version = '3.1.0'
+    cmake_default_version = '3.4.0'
     meson_default_version = '0.50.1'
     gstreamer_default_version = '1.16.0'
     gst_plugins_base_default_version = gstreamer_default_version
