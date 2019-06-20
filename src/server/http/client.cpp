@@ -24,8 +24,8 @@ bool HttpClient::IsVerified() const {
   return is_verified_;
 }
 
-void HttpClient::SetVerified(bool verif) {
-  is_verified_ = verif;
+void HttpClient::SetVerified(bool verified) {
+  is_verified_ = verified;
 }
 
 const char* HttpClient::ClassName() const {

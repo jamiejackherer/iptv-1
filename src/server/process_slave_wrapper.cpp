@@ -54,6 +54,7 @@
 #include "server/daemon/commands_info/stream/get_log_info.h"
 #include "server/daemon/commands_info/stream/quit_status_info.h"
 #include "server/daemon/commands_info/stream/restart_info.h"
+#include "server/daemon/commands_info/stream/start_info.h"
 #include "server/daemon/commands_info/stream/stop_info.h"
 #include "server/daemon/server.h"
 #include "server/http/handler.h"
@@ -492,19 +493,19 @@ void ProcessSlaveWrapper::PreLooped(common::libev::IoLoop* server) {
   ping_client_timer_ = server->CreateTimer(ping_timeout_clients_seconds, true);
   node_stats_timer_ = server->CreateTimer(node_stats_send_seconds, true);
   cleanup_files_timer_ = server->CreateTimer(config_.ttl_files_, true);
-  IServerHandler::PreLooped(server);
 }
 
 void ProcessSlaveWrapper::Accepted(common::libev::IoClient* client) {
-  IServerHandler::Accepted(client);
+  UNUSED(client);
 }
 
 void ProcessSlaveWrapper::Moved(common::libev::IoLoop* server, common::libev::IoClient* client) {
-  IServerHandler::Moved(server, client);
+  UNUSED(server);
+  UNUSED(client);
 }
 
 void ProcessSlaveWrapper::Closed(common::libev::IoClient* client) {
-  IServerHandler::Closed(client);
+  UNUSED(client);
 }
 
 void ProcessSlaveWrapper::TimerEmited(common::libev::IoLoop* server, common::libev::timer_id_t id) {
@@ -546,15 +547,16 @@ void ProcessSlaveWrapper::TimerEmited(common::libev::IoLoop* server, common::lib
     http_server_->Stop();
     loop_->Stop();
   }
-  IServerHandler::TimerEmited(server, id);
 }
 
+#if LIBEV_CHILD_ENABLE
 void ProcessSlaveWrapper::Accepted(common::libev::IoChild* child) {
-  IServerHandler::Accepted(child);
+  UNUSED(child);
 }
 
 void ProcessSlaveWrapper::Moved(common::libev::IoLoop* server, common::libev::IoChild* child) {
-  IServerHandler::Moved(server, child);
+  UNUSED(server);
+  UNUSED(child);
 }
 
 void ProcessSlaveWrapper::ChildStatusChanged(common::libev::IoChild* child, int status) {
@@ -589,12 +591,12 @@ void ProcessSlaveWrapper::ChildStatusChanged(common::libev::IoChild* child, int 
   if (err_ser) {
     const std::string err_str = err_ser->GetDescription();
     WARNING_LOG() << "Failed to generate strean exit message: " << err_str;
-    return IServerHandler::ChildStatusChanged(child, status);
+    return;
   }
 
   BroadcastClients(QuitStatusStreamBroadcast(quit_json));
-  IServerHandler::ChildStatusChanged(child, status);
 }
+#endif
 
 Child* ProcessSlaveWrapper::FindChildByID(stream_id_t cid) const {
   auto childs = loop_->GetChilds();
@@ -725,11 +727,10 @@ void ProcessSlaveWrapper::DataReceived(common::libev::IoClient* client) {
   } else {
     NOTREACHED();
   }
-  IServerHandler::DataReceived(client);
 }
 
 void ProcessSlaveWrapper::DataReadyToWrite(common::libev::IoClient* client) {
-  IServerHandler::DataReadyToWrite(client);
+  UNUSED(client);
 }
 
 void ProcessSlaveWrapper::PostLooped(common::libev::IoLoop* server) {
@@ -747,7 +748,6 @@ void ProcessSlaveWrapper::PostLooped(common::libev::IoLoop* server) {
     server->RemoveTimer(node_stats_timer_);
     node_stats_timer_ = INVALID_TIMER_ID;
   }
-  IServerHandler::PostLooped(server);
 }
 
 void ProcessSlaveWrapper::OnHttpRequest(common::libev::http::HttpClient* client, const file_path_t& file) {
@@ -839,12 +839,6 @@ common::ErrnoError ProcessSlaveWrapper::HandleResponcePingService(ProtocoledDaem
     return common::ErrnoError();
   }
   return common::ErrnoError();
-}
-
-common::ErrnoError ProcessSlaveWrapper::CreateChildStream(const stream::StartInfo& start_info) {
-  CHECK(loop_->IsLoopThread());
-  const std::string config_str = start_info.GetConfig();
-  return CreateChildStream(config_str);
 }
 
 common::ErrnoError ProcessSlaveWrapper::CreateChildStream(const std::string& config) {
@@ -1040,7 +1034,7 @@ common::ErrnoError ProcessSlaveWrapper::HandleRequestClientStartStream(Protocole
       return common::make_errno_error(err_str, EAGAIN);
     }
 
-    common::ErrnoError err = CreateChildStream(start_info);
+    common::ErrnoError err = CreateChildStream(start_info.GetConfig());
     if (err) {
       protocol::response_t resp = StartStreamResponceFail(req->id, err->GetDescription());
       dclient->WriteResponce(resp);

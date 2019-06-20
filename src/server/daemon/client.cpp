@@ -24,8 +24,8 @@ bool DaemonClient::IsVerified() const {
   return is_verified_;
 }
 
-void DaemonClient::SetVerified(bool verif) {
-  is_verified_ = verif;
+void DaemonClient::SetVerified(bool verified) {
+  is_verified_ = verified;
 }
 
 const char* DaemonClient::ClassName() const {

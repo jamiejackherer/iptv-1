@@ -24,8 +24,8 @@ bool VodsClient::IsVerified() const {
   return is_verified_;
 }
 
-void VodsClient::SetVerified(bool verif) {
-  is_verified_ = verif;
+void VodsClient::SetVerified(bool verified) {
+  is_verified_ = verified;
 }
 
 const char* VodsClient::ClassName() const {

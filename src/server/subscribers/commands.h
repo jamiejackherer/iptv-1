@@ -20,8 +20,8 @@
 
 #include <string>  // for string
 
-#include <fastotv/types.h>
 #include <fastotv/protocol/types.h>
+#include <fastotv/types.h>
 
 namespace iptv_cloud {
 namespace server {

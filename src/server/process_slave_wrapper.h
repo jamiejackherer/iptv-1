@@ -17,6 +17,7 @@
 #include <map>
 #include <string>
 
+#include <common/libev/io_loop_observer.h>
 #include <common/net/types.h>
 
 #include "base/types.h"
@@ -24,9 +25,7 @@
 #include "utils/arg_reader.h"
 
 #include "server/base/ihttp_requests_observer.h"
-#include "server/base/iserver_handler.h"
 #include "server/config.h"
-#include "server/daemon/commands_info/stream/start_info.h"
 
 namespace iptv_cloud {
 namespace server {
@@ -36,10 +35,11 @@ class ProtocoledPipeClient;
 namespace subscribers {
 class ISubscribeFinder;
 }
+
 class Child;
 class ProtocoledDaemonClient;
 
-class ProcessSlaveWrapper : public base::IServerHandler, public server::base::IHttpRequestsObserver {
+class ProcessSlaveWrapper : public common::libev::IoLoopObserver, public server::base::IHttpRequestsObserver {
  public:
   enum { node_stats_send_seconds = 10, ping_timeout_clients_seconds = 60, cleanup_seconds = 3 };
   typedef utils::ArgsMap serialized_stream_t;
@@ -60,9 +60,11 @@ class ProcessSlaveWrapper : public base::IServerHandler, public server::base::IH
   void Closed(common::libev::IoClient* client) override;
   void TimerEmited(common::libev::IoLoop* server, common::libev::timer_id_t id) override;
 
+#if LIBEV_CHILD_ENABLE
   void Accepted(common::libev::IoChild* child) override;
   void Moved(common::libev::IoLoop* server, common::libev::IoChild* child) override;
   void ChildStatusChanged(common::libev::IoChild* child, int status) override;
+#endif
 
   void DataReceived(common::libev::IoClient* client) override;
   void DataReadyToWrite(common::libev::IoClient* client) override;
@@ -95,7 +97,6 @@ class ProcessSlaveWrapper : public base::IServerHandler, public server::base::IH
 
   protocol::sequance_id_t NextRequestID();
 
-  common::ErrnoError CreateChildStream(const stream::StartInfo& start_info);
   common::ErrnoError CreateChildStream(const std::string& config);
   common::ErrnoError CreateChildStream(const serialized_stream_t& config_args);
 

@@ -26,7 +26,7 @@ class DaemonClient : public common::libev::tcp::TcpClient {
   typedef common::libev::tcp::TcpClient base_class;
 
   bool IsVerified() const;
-  void SetVerified(bool verif);
+  void SetVerified(bool verified);
 
   const char* ClassName() const override;
 
