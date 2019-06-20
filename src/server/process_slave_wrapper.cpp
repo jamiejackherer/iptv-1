@@ -1529,7 +1529,15 @@ std::string ProcessSlaveWrapper::MakeServiceStats(bool full_stat) const {
   }
   node_stats_->timestamp = current_time;
 
-  service::OnlineUsers online(GetOnlineClients(), static_cast<HttpHandler*>(http_handler_)->GetOnlineClients(),
+  size_t daemons_client_count = 0;
+  std::vector<common::libev::IoClient*> clients = loop_->GetClients();
+  for (size_t i = 0; i < clients.size(); ++i) {
+    ProtocoledDaemonClient* dclient = dynamic_cast<ProtocoledDaemonClient*>(clients[i]);
+    if (dclient && dclient->IsVerified()) {
+      daemons_client_count++;
+    }
+  }
+  service::OnlineUsers online(daemons_client_count, static_cast<HttpHandler*>(http_handler_)->GetOnlineClients(),
                               static_cast<HttpHandler*>(vods_handler_)->GetOnlineClients(),
                               static_cast<HttpHandler*>(subscribers_handler_)->GetOnlineClients());
   service::ServerInfo stat(cpu_load * 100, node_stats_->gpu_load, uptime_str, mem_shot, hdd_shot, bytes_recv / ts_diff,
