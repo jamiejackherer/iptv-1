@@ -19,7 +19,7 @@
 #include <string>  // for string
 
 #include <common/optional.h>
-#include <fastotv/client_server_types.h>
+#include <fastotv/types.h>
 
 #define TS_EXTENSION "ts"
 #define M3U8_EXTENSION "m3u8"

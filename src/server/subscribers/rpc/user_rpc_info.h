@@ -20,7 +20,7 @@
 
 #include <common/serializer/json_serializer.h>
 
-#include <fastotv/client_server_types.h>
+#include <fastotv/types.h>
 
 namespace iptv_cloud {
 namespace server {

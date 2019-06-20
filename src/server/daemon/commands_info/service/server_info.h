@@ -19,7 +19,7 @@
 #include <common/net/types.h>
 #include <common/serializer/json_serializer.h>
 
-#include <fastotv/client_server_types.h>
+#include <fastotv/types.h>
 
 #include "utils/utils.h"
 
