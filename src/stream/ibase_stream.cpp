@@ -198,15 +198,15 @@ void IBaseStream::LinkOutputPad(GstPad* pad, element_id_t id) {
 }
 
 void IBaseStream::PreExecCleanup() {
-  const time_t cur_timestamp = common::time::current_mstime() / 1000;  // OK
-  const time_t max_life_time = IsVod() ? cur_timestamp : cur_timestamp - cleanup_period_sec;
+  const fastotv::timestamp_t cur_timestamp = common::time::current_utc_mstime();
+  const fastotv::timestamp_t max_life_time = IsVod() ? cur_timestamp : cur_timestamp - cleanup_period_sec * 1000;
   for (const OutputUri& output : config_->GetOutput()) {
     common::uri::Url uri = output.GetOutput();
     common::uri::Url::scheme scheme = uri.GetScheme();
 
     if (scheme == common::uri::Url::http) {
       const common::file_system::ascii_directory_string_path http_path = output.GetHttpRoot();
-      utils::RemoveOldFilesByTime(http_path, max_life_time, CHUNK_EXT);
+      utils::RemoveOldFilesByTime(http_path, max_life_time / 1000, CHUNK_EXT);
     }
   }
 }

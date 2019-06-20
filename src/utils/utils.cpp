@@ -82,7 +82,7 @@ void RemoveFilesByExtension(const common::file_system::ascii_directory_string_pa
 }
 
 void RemoveOldFilesByTime(const common::file_system::ascii_directory_string_path& dir,
-                          time_t max_life_secs,
+                          common::utctime_t max_life_secs,
                           const char* ext) {
   if (!dir.IsValid()) {
     return;
@@ -105,7 +105,7 @@ void RemoveOldFilesByTime(const common::file_system::ascii_directory_string_path
     char* pch = strstr(dent->d_name, ext);
     if (pch) {
       std::string file_path = common::MemSPrintf("%s%s", path, dent->d_name);
-      time_t mtime;
+      common::utctime_t mtime;
       common::ErrnoError err = common::file_system::get_file_time_last_modification(file_path, &mtime);
       if (err) {
         WARNING_LOG() << "Can't get timestamp file: " << file_path << ", error: " << err->GetDescription();

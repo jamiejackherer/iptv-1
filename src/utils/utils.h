@@ -82,7 +82,7 @@ SysinfoShot GetMachineSysinfoShot();
 
 common::ErrnoError CreateAndCheckDir(const std::string& directory_path);
 void RemoveOldFilesByTime(const common::file_system::ascii_directory_string_path& dir,
-                          time_t max_life_secs,
+                          common::utctime_t max_life_secs,
                           const char* ext);
 void RemoveFilesByExtension(const common::file_system::ascii_directory_string_path& dir, const char* ext);
 
