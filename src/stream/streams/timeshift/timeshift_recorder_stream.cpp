@@ -91,7 +91,7 @@ void TimeShiftRecorderStream::OnSplitmuxsinkCreated(Connector conn, elements::si
 chunk_index_t TimeShiftRecorderStream::GetNextChunkStrategy(chunk_index_t last_index,
                                                             time_t last_index_created_time) const {
   const TimeshiftConfig* tconf = static_cast<const TimeshiftConfig*>(GetConfig());
-  time_t cur_time = common::time::current_mstime() / 1000;  // OK
+  time_t cur_time = common::time::current_utc_mstime() / 1000;  // OK
   time_t diff = cur_time - last_index_created_time;
   if (diff > 0) {
     last_index += diff / tconf->GetTimeShiftChunkDuration();

@@ -64,7 +64,7 @@ bool TimeShiftInfo::FindChunkToPlay(time_t chunk_duration, chunk_index_t* index)
     return false;
   }
 
-  time_t desired_time = common::time::current_mstime() / 1000 - timeshift_delay * 60;  // OK
+  time_t desired_time = common::time::current_utc_mstime() / 1000 - timeshift_delay * 60;  // OK
   std::string absolute_path = timshift_dir.GetPath();
   if (!common::file_system::is_directory_exist(absolute_path)) {
     CRITICAL_LOG() << "Folder with chunks doesn't exist: " << absolute_path;
