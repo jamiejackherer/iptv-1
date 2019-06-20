@@ -22,6 +22,7 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 
 ServerAuthInfo::ServerAuthInfo() : base_class() {}
 
@@ -70,5 +71,6 @@ rpc::UserRpcInfo ServerAuthInfo::MakeUserRpc() const {
   return rpc::UserRpcInfo(uid_, GetDeviceID());
 }
 
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

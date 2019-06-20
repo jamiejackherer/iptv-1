@@ -22,14 +22,15 @@
 namespace iptv_cloud {
 namespace server {
 
-class SyncFinder : public ISubscribeFinder {
+class SyncFinder : public subscribers::ISubscribeFinder {
  public:
-  typedef std::map<fastotv::login_t, UserInfo> users_t;
+  typedef std::map<fastotv::login_t, subscribers::commands_info::UserInfo> users_t;
 
   SyncFinder();
-  common::Error FindUser(const fastotv::commands_info::AuthInfo& user, UserInfo* uinf) const override;
+  common::Error FindUser(const fastotv::commands_info::AuthInfo& user,
+                         subscribers::commands_info::UserInfo* uinf) const override;
   void Clear();
-  void AddUser(const UserInfo& user);
+  void AddUser(const subscribers::commands_info::UserInfo& user);
 
  private:
   users_t users_;

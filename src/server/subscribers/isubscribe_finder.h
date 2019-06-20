@@ -26,14 +26,16 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 
 class ISubscribeFinder {
  public:
   virtual common::Error FindUser(const fastotv::commands_info::AuthInfo& auth,
-                                 UserInfo* uinf) const WARN_UNUSED_RESULT = 0;
+                                 commands_info::UserInfo* uinf) const WARN_UNUSED_RESULT = 0;
 
   virtual ~ISubscribeFinder();
 };
 
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

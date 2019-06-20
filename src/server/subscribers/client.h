@@ -20,6 +20,7 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 
 class SubscriberClient : public fastotv::Client {
  public:
@@ -47,5 +48,6 @@ class ProtocoledSubscriberClient : public fastotv::protocol::ProtocolClient<Subs
   ProtocoledSubscriberClient(common::libev::IoLoop* server, const common::net::socket_info& info);
 };
 
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

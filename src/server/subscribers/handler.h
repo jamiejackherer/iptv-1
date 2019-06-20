@@ -35,9 +35,11 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
+
 class ProtocoledSubscriberClient;
-class ISubscribeFinder;
 class ServerAuthInfo;
+class ISubscribeFinder;
 
 class SubscribersHandler : public base::IServerHandler {
  public:
@@ -102,5 +104,6 @@ class SubscribersHandler : public base::IServerHandler {
   inner_connections_t connections_;
 };
 
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

@@ -20,8 +20,10 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 
 ISubscribeFinder::~ISubscribeFinder() {}
 
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

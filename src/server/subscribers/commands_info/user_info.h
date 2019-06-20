@@ -25,6 +25,8 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
+namespace commands_info {
 
 enum Status { NO_ACTIVE = 0, ACTIVE = 1, BANNED = 2 };
 
@@ -72,5 +74,8 @@ inline bool operator==(const UserInfo& lhs, const UserInfo& rhs) {
 inline bool operator!=(const UserInfo& x, const UserInfo& y) {
   return !(x == y);
 }
+
+}  // namespace commands_info
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

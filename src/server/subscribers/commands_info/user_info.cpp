@@ -27,6 +27,8 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
+namespace commands_info {
 
 UserInfo::UserInfo() : login_(), password_(), ch_(), devices_(), status_(BANNED) {}
 
@@ -164,5 +166,7 @@ bool UserInfo::Equals(const UserInfo& uinf) const {
   return uid_ == uinf.uid_ && login_ == uinf.login_ && password_ == uinf.password_ && ch_ == uinf.ch_;
 }
 
+}  // namespace commands_info
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

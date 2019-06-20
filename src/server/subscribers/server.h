@@ -18,6 +18,7 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 
 class SubscribersServer : public common::libev::tcp::TcpServer {
  public:
@@ -28,5 +29,6 @@ class SubscribersServer : public common::libev::tcp::TcpServer {
   common::libev::tcp::TcpClient* CreateClient(const common::net::socket_info& info) override;
 };
 
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

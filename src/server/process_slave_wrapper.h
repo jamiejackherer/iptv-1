@@ -30,11 +30,13 @@
 
 namespace iptv_cloud {
 namespace server {
-class Child;
-class ISubscribeFinder;
 namespace pipe {
 class ProtocoledPipeClient;
 }
+namespace subscribers {
+class ISubscribeFinder;
+}
+class Child;
 class ProtocoledDaemonClient;
 
 class ProcessSlaveWrapper : public base::IServerHandler, public server::base::IHttpRequestsObserver {
@@ -160,7 +162,7 @@ class ProcessSlaveWrapper : public base::IServerHandler, public server::base::IH
   stream_exec_t stream_exec_func_;
 
   std::map<common::file_system::ascii_directory_string_path, serialized_stream_t> vods_links_;
-  ISubscribeFinder* finder_;
+  subscribers::ISubscribeFinder* finder_;
 };
 
 }  // namespace server

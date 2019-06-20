@@ -16,6 +16,7 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 
 SubscriberClient::SubscriberClient(common::libev::IoLoop* server, const common::net::socket_info& info)
     : base_class(server, info) {}
@@ -44,5 +45,6 @@ ProtocoledSubscriberClient::ProtocoledSubscriberClient(common::libev::IoLoop* se
                                                        const common::net::socket_info& info)
     : base_class(server, info) {}
 
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

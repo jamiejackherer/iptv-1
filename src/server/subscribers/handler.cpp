@@ -33,6 +33,7 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 
 SubscribersHandler::SubscribersHandler(ISubscribeFinder* finder, const common::net::HostAndPort& bandwidth_host)
     : base_class(),
@@ -79,8 +80,7 @@ void SubscribersHandler::TimerEmited(common::libev::IoLoop* server, common::libe
         common::ErrnoError err = iclient->WriteRequest(ping_request);
         if (err) {
           DEBUG_MSG_ERROR(err, common::logging::LOG_LEVEL_ERR);
-          err = client->Close();
-          DCHECK(!err) << "Close client error: " << err->GetDescription();
+          ignore_result(client->Close());
           delete client;
         } else {
           INFO_LOG() << "Sent ping to client[" << client->GetFormatedName() << "], from server["
@@ -128,8 +128,7 @@ void SubscribersHandler::DataReceived(common::libev::IoClient* client) {
   common::ErrnoError err = iclient->ReadCommand(&buff);
   if (err) {
     DEBUG_MSG_ERROR(err, common::logging::LOG_LEVEL_ERR);
-    err = client->Close();
-    DCHECK(!err) << "Close client error: " << err->GetDescription();
+    ignore_result(client->Close());
     delete client;
     return base_class::DataReceived(client);
   }
@@ -240,7 +239,7 @@ common::ErrnoError SubscribersHandler::HandleRequestClientActivate(ProtocoledSub
       return common::make_errno_error(error_str, EINVAL);
     }
 
-    UserInfo registered_user;
+    subscribers::commands_info::UserInfo registered_user;
     common::Error err_find = finder_->FindUser(uauth, &registered_user);
     if (err_find) {
       const std::string error_str = err_find->GetDescription();
@@ -306,7 +305,15 @@ common::ErrnoError SubscribersHandler::HandleRequestClientPing(ProtocoledSubscri
       return common::make_errno_error(err_str, EAGAIN);
     }
 
-    fastotv::protocol::response_t resp = PingResponseSuccess(req->id);
+    fastotv::commands_info::ServerPingInfo server_ping_info;
+    std::string server_ping_info_str;
+    common::Error err_ser = server_ping_info.SerializeToString(&server_ping_info_str);
+    if (err_ser) {
+      const std::string err_str = err_ser->GetDescription();
+      return common::make_errno_error(err_str, EAGAIN);
+    }
+
+    fastotv::protocol::response_t resp = PingResponseSuccess(req->id, server_ping_info_str);
     return client->WriteResponce(resp);
   }
 
@@ -316,7 +323,7 @@ common::ErrnoError SubscribersHandler::HandleRequestClientPing(ProtocoledSubscri
 common::ErrnoError SubscribersHandler::HandleRequestClientGetServerInfo(ProtocoledSubscriberClient* client,
                                                                         fastotv::protocol::request_t* req) {
   fastotv::commands_info::AuthInfo hinf = client->GetServerHostInfo();
-  UserInfo user;
+  subscribers::commands_info::UserInfo user;
   common::Error err = finder_->FindUser(hinf, &user);
   if (err) {
     const fastotv::protocol::response_t resp = GetServerInfoResponceFail(req->id, err->GetDescription());
@@ -342,7 +349,7 @@ common::ErrnoError SubscribersHandler::HandleRequestClientGetServerInfo(Protocol
 common::ErrnoError SubscribersHandler::HandleRequestClientGetChannels(ProtocoledSubscriberClient* client,
                                                                       fastotv::protocol::request_t* req) {
   fastotv::commands_info::AuthInfo hinf = client->GetServerHostInfo();
-  UserInfo user;
+  subscribers::commands_info::UserInfo user;
   common::Error err = finder_->FindUser(hinf, &user);
   if (err) {
     const std::string err_str = err->GetDescription();
@@ -479,8 +486,8 @@ common::ErrnoError SubscribersHandler::HandleResponceServerPing(ProtocoledSubscr
       return common::make_errno_error_inval();
     }
 
-    fastotv::commands_info::ServerPingInfo server_ping_info;
-    common::Error err_des = server_ping_info.DeSerialize(jclient_ping);
+    fastotv::commands_info::ClientPingInfo client_ping_info;
+    common::Error err_des = client_ping_info.DeSerialize(jclient_ping);
     json_object_put(jclient_ping);
     if (err_des) {
       const std::string err_str = err_des->GetDescription();
@@ -534,5 +541,6 @@ common::ErrnoError SubscribersHandler::HandleResponceCommand(ProtocoledSubscribe
   return common::ErrnoError();
 }
 
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

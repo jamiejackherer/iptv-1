@@ -322,8 +322,8 @@ ProcessSlaveWrapper::ProcessSlaveWrapper(const std::string& license_key, const C
   vods_server_->SetName("vods_server");
 
   finder_ = new SyncFinder;
-  subscribers_handler_ = new SubscribersHandler(finder_, config.bandwidth_host);
-  subscribers_server_ = new SubscribersServer(config.subscribers_host, subscribers_handler_);
+  subscribers_handler_ = new subscribers::SubscribersHandler(finder_, config.bandwidth_host);
+  subscribers_server_ = new subscribers::SubscribersServer(config.subscribers_host, subscribers_handler_);
   subscribers_server_->SetName("subscribers_server");
 }
 
@@ -434,7 +434,7 @@ int ProcessSlaveWrapper::Exec(int argc, char** argv) {
     UNUSED(res);
   });
 
-  SubscribersServer* subscribers_server = static_cast<SubscribersServer*>(subscribers_server_);
+  subscribers::SubscribersServer* subscribers_server = static_cast<subscribers::SubscribersServer*>(subscribers_server_);
   std::thread subscribers_thread = std::thread([subscribers_server] {
     common::ErrnoError err = subscribers_server->Bind(true);
     if (err) {
@@ -524,8 +524,7 @@ void ProcessSlaveWrapper::TimerEmited(common::libev::IoLoop* server, common::lib
         common::ErrnoError err = dclient->WriteRequest(ping_request);
         if (err) {
           DEBUG_MSG_ERROR(err, common::logging::LOG_LEVEL_ERR);
-          err = dclient->Close();
-          DCHECK(!err);
+          ignore_result(dclient->Close());
           delete dclient;
         } else {
           INFO_LOG() << "Pinged to client[" << client->GetFormatedName() << "], from server["
@@ -1282,7 +1281,7 @@ common::ErrnoError ProcessSlaveWrapper::HandleRequestClientSyncService(Protocole
     SyncFinder* sfinder = static_cast<SyncFinder*>(finder_);
     sfinder->Clear();
     for (const std::string& user : sync_info.GetUsers()) {
-      UserInfo uinf;
+      subscribers::commands_info::UserInfo uinf;
       common::Error err = uinf.DeSerializeFromString(user);
       if (!err) {
         sfinder->AddUser(uinf);

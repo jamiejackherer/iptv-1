@@ -22,6 +22,7 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 
 fastotv::protocol::request_t PingRequest(fastotv::protocol::sequance_id_t id,
                                          fastotv::protocol::serializet_params_t params) {
@@ -42,9 +43,10 @@ fastotv::protocol::response_t ActivateResponseFail(fastotv::protocol::sequance_i
       id, common::protocols::json_rpc::JsonRPCError::MakeInternalErrorFromText(error_text));
 }
 
-fastotv::protocol::response_t PingResponseSuccess(fastotv::protocol::sequance_id_t id) {
-  return fastotv::protocol::response_t::MakeMessage(id,
-                                                    common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage());
+fastotv::protocol::response_t PingResponseSuccess(fastotv::protocol::sequance_id_t id,
+                                                  fastotv::protocol::serializet_params_t params) {
+  return fastotv::protocol::response_t::MakeMessage(
+      id, common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage(*params));
 }
 
 fastotv::protocol::response_t GetServerInfoResponceSuccsess(fastotv::protocol::sequance_id_t id,
@@ -77,5 +79,6 @@ fastotv::protocol::response_t GetRuntimeChannelInfoResponceSuccsess(fastotv::pro
       id, common::protocols::json_rpc::JsonRPCMessage::MakeSuccessMessage(*params));
 }
 
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

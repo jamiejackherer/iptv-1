@@ -21,8 +21,8 @@
 #include <string>
 #include <utility>
 
-#include "server/http/client.h"
 #include "server/base/ihttp_requests_observer.h"
+#include "server/http/client.h"
 
 namespace iptv_cloud {
 namespace server {

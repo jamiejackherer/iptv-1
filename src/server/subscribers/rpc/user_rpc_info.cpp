@@ -23,6 +23,7 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 namespace rpc {
 
 UserRpcInfo::UserRpcInfo() : user_id_(), device_id_() {}
@@ -71,5 +72,6 @@ common::Error UserRpcInfo::DoDeSerialize(json_object* serialized) {
 }
 
 }  // namespace rpc
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

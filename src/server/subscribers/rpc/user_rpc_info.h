@@ -24,6 +24,7 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 namespace rpc {
 
 class UserRpcInfo : public common::serializer::JsonSerializer<UserRpcInfo> {
@@ -56,5 +57,6 @@ inline bool operator!=(const UserRpcInfo& x, const UserRpcInfo& y) {
 }
 
 }  // namespace rpc
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud

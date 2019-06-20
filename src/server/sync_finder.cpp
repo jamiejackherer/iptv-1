@@ -19,7 +19,8 @@ namespace server {
 
 SyncFinder::SyncFinder() : users_() {}
 
-common::Error SyncFinder::FindUser(const fastotv::commands_info::AuthInfo& user, UserInfo* uinf) const {
+common::Error SyncFinder::FindUser(const fastotv::commands_info::AuthInfo& user,
+                                   subscribers::commands_info::UserInfo* uinf) const {
   if (!user.IsValid() || !uinf) {
     return common::make_error_inval();
   }
@@ -39,7 +40,7 @@ void SyncFinder::Clear() {
   users_.clear();
 }
 
-void SyncFinder::AddUser(const UserInfo& user) {
+void SyncFinder::AddUser(const subscribers::commands_info::UserInfo& user) {
   std::unique_lock<std::mutex> lock(users_mutex_);
   users_.insert(std::make_pair(user.GetLogin(), user));
 }

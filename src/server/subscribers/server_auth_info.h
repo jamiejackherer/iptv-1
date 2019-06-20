@@ -24,6 +24,7 @@
 
 namespace iptv_cloud {
 namespace server {
+namespace subscribers {
 
 class ServerAuthInfo : public fastotv::commands_info::AuthInfo {
  public:
@@ -54,5 +55,6 @@ inline bool operator!=(const ServerAuthInfo& x, const ServerAuthInfo& y) {
   return !(x == y);
 }
 
+}  // namespace subscribers
 }  // namespace server
 }  // namespace iptv_cloud
