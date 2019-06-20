@@ -12,7 +12,7 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/commands_info/stream/get_log_info.h"
+#include "server/daemon/commands_info/stream/get_log_info.h"
 
 #include <string>
 

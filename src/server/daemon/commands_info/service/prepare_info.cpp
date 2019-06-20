@@ -12,7 +12,7 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/commands_info/service/prepare_info.h"
+#include "server/daemon/commands_info/service/prepare_info.h"
 
 #include <string>
 

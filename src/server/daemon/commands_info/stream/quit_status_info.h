@@ -12,19 +12,33 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/daemon_server.h"
+#pragma once
 
-#include "server/daemon_client.h"
+#include "server/daemon/commands_info/stream/stream_info.h"
 
 namespace iptv_cloud {
 namespace server {
+namespace stream {
 
-DaemonServer::DaemonServer(const common::net::HostAndPort& host, common::libev::IoLoopObserver* observer)
-    : base_class(host, true, observer) {}
+class QuitStatusInfo : public StreamInfo {
+ public:
+  typedef StreamInfo base_class;
 
-common::libev::tcp::TcpClient* DaemonServer::CreateClient(const common::net::socket_info& info) {
-  return new ProtocoledDaemonClient(this, info);
-}
+  QuitStatusInfo();
+  explicit QuitStatusInfo(stream_id_t stream_id, int exit_status, int signal);
 
+  int GetSignal() const;
+  int GetExitStatus() const;
+
+ protected:
+  common::Error DoDeSerialize(json_object* serialized) override;
+  common::Error SerializeFields(json_object* out) const override;
+
+ private:
+  int exit_status_;
+  int signal_;
+};
+
+}  // namespace stream
 }  // namespace server
 }  // namespace iptv_cloud

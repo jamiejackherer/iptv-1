@@ -12,38 +12,28 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
-
-#include <string>
-
-#include <common/uri/url.h>
-
-#include "server/commands_info/stream/stream_info.h"
+#include "server/daemon/client.h"
 
 namespace iptv_cloud {
 namespace server {
-namespace stream {
 
-class GetLogInfo : public StreamInfo {
- public:
-  typedef StreamInfo base_class;
-  typedef common::uri::Url url_t;
+DaemonClient::DaemonClient(common::libev::IoLoop* server, const common::net::socket_info& info)
+    : base_class(server, info), is_verified_(false) {}
 
-  GetLogInfo();
-  explicit GetLogInfo(stream_id_t stream_id, const std::string& feedback_dir, const url_t& log_path);
+bool DaemonClient::IsVerified() const {
+  return is_verified_;
+}
 
-  url_t GetLogPath() const;
-  std::string GetFeedbackDir() const;
+void DaemonClient::SetVerified(bool verif) {
+  is_verified_ = verif;
+}
 
- protected:
-  common::Error DoDeSerialize(json_object* serialized) override;
-  common::Error SerializeFields(json_object* out) const override;
+const char* DaemonClient::ClassName() const {
+  return "DaemonClient";
+}
 
- private:
-  std::string feedback_dir_;
-  common::uri::Url path_;
-};
+ProtocoledDaemonClient::ProtocoledDaemonClient(common::libev::IoLoop* server, const common::net::socket_info& info)
+    : base_class(server, info) {}
 
-}  // namespace stream
 }  // namespace server
 }  // namespace iptv_cloud

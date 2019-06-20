@@ -12,7 +12,7 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/commands_info/stream/start_info.h"
+#include "server/daemon/commands_info/stream/start_info.h"
 
 #define START_STREAM_INFO_CONFIG_KEY_FIELD "config"
 

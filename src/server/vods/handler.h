@@ -22,14 +22,16 @@ namespace iptv_cloud {
 namespace server {
 
 class VodsClient;
+namespace base {
 class IHttpRequestsObserver;
+}
 
 class VodsHandler : public base::IServerHandler {
  public:
   enum { BUF_SIZE = 4096 };
   typedef base::IServerHandler base_class;
   typedef common::file_system::ascii_directory_string_path vods_directory_path_t;
-  explicit VodsHandler(IHttpRequestsObserver* observer);
+  explicit VodsHandler(base::IHttpRequestsObserver* observer);
 
   void SetVodsRoot(const vods_directory_path_t& vods_root);
 
@@ -54,7 +56,7 @@ class VodsHandler : public base::IServerHandler {
   void ProcessReceived(VodsClient* hclient, const char* request, size_t req_len);
 
   vods_directory_path_t vods_root_;
-  IHttpRequestsObserver* const observer_;
+  base::IHttpRequestsObserver* const observer_;
 };
 
 }  // namespace server

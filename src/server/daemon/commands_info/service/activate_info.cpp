@@ -12,41 +12,15 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/commands_info/service/get_log_info.h"
-
-#include <string>
-
-#define GET_LOG_INFO_PATH_FIELD "path"
+#include "server/daemon/commands_info/service/activate_info.h"
 
 namespace iptv_cloud {
 namespace server {
 namespace service {
 
-GetLogInfo::GetLogInfo() : base_class(), path_() {}
+ActivateInfo::ActivateInfo() : LicenseInfo() {}
 
-GetLogInfo::GetLogInfo(const url_t& path) : path_(path) {}
-
-common::Error GetLogInfo::SerializeFields(json_object* out) const {
-  const std::string path_str = path_.GetUrl();
-  json_object_object_add(out, GET_LOG_INFO_PATH_FIELD, json_object_new_string(path_str.c_str()));
-  return common::Error();
-}
-
-common::Error GetLogInfo::DoDeSerialize(json_object* serialized) {
-  GetLogInfo inf;
-  json_object* jpath = nullptr;
-  json_bool jpath_exists = json_object_object_get_ex(serialized, GET_LOG_INFO_PATH_FIELD, &jpath);
-  if (jpath_exists) {
-    inf.path_ = url_t(json_object_get_string(jpath));
-  }
-
-  *this = inf;
-  return common::Error();
-}
-
-GetLogInfo::url_t GetLogInfo::GetLogPath() const {
-  return path_;
-}
+ActivateInfo::ActivateInfo(const std::string& license) : LicenseInfo(license) {}
 
 }  // namespace service
 }  // namespace server

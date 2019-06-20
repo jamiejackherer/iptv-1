@@ -13,42 +13,6 @@ SET(STREAMER_SERVICE_BANDWIDTH_HOST "localhost:${STREAMER_SERVICE_BANDWIDTH_PORT
 SET(STREAMER_SERVICE_TTL_FILES 3600)
 SET(STREAMER_SERVICE_NAME_EXE ${STREAMER_SERVICE_NAME}_s)
 
-SET(DAEMONS_HEADERS_COMANDS_INFO
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/sync_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/activate_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/license_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/stop_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/ping_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/server_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/prepare_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/get_log_info.h
-
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/stream_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/start_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/quit_status_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/restart_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/stop_info.h
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/get_log_info.h
-)
-
-SET(DAEMONS_SOURCES_COMANDS_INFO
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/sync_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/license_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/activate_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/stop_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/ping_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/server_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/prepare_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/service/get_log_info.cpp
-
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/stream_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/start_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/quit_status_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/restart_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/stop_info.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/commands_info/stream/get_log_info.cpp
-)
-
 SET(PIPE_HEADERS ${CMAKE_SOURCE_DIR}/src/server/pipe/pipe_client.h)
 SET(PIPE_SOURCES ${CMAKE_SOURCE_DIR}/src/server/pipe/pipe_client.cpp)
 
@@ -117,39 +81,79 @@ SET(SERVER_SUBSCRIBERS_SOURCES
   ${CMAKE_SOURCE_DIR}/src/server/subscribers/rpc/user_rpc_info.cpp
 )
 
+SET(SERVER_DAEMON_HEADERS
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/client.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/server.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands.h
+
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/sync_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/activate_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/license_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/stop_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/ping_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/server_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/prepare_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/get_log_info.h
+
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/stream_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/start_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/quit_status_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/restart_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/stop_info.h
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/get_log_info.h
+)
+
+SET(SERVER_DAEMON_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/client.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/server.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands.cpp
+
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/sync_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/license_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/activate_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/stop_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/ping_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/server_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/prepare_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/service/get_log_info.cpp
+
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/stream_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/start_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/quit_status_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/restart_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/stop_info.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/daemon/commands_info/stream/get_log_info.cpp
+)
+
 SET(DAEMONS_HEADERS
   ${CMAKE_SOURCE_DIR}/src/server/base/iserver_handler.h
+  ${CMAKE_SOURCE_DIR}/src/server/base/ihttp_requests_observer.h
+
   ${CMAKE_SOURCE_DIR}/src/server/sync_finder.h
   ${CMAKE_SOURCE_DIR}/src/server/child_stream.h
   ${CMAKE_SOURCE_DIR}/src/server/process_slave_wrapper.h
-  ${CMAKE_SOURCE_DIR}/src/server/daemon_client.h
-  ${CMAKE_SOURCE_DIR}/src/server/daemon_server.h
-  ${CMAKE_SOURCE_DIR}/src/server/daemon_commands.h
   ${CMAKE_SOURCE_DIR}/src/server/stream_struct_utils.h
   ${CMAKE_SOURCE_DIR}/src/server/config.h
-  ${CMAKE_SOURCE_DIR}/src/server/ihttp_requests_observer.h
 
   ${SERVER_HTTP_HEADERS}
   ${SERVER_VODS_HEADERS}
   ${SERVER_SUBSCRIBERS_HEADERS}
-  ${DAEMONS_HEADERS_COMANDS_INFO}
+  ${SERVER_DAEMON_HEADERS}
 )
 SET(DAEMONS_SOURCES
   ${CMAKE_SOURCE_DIR}/src/server/base/iserver_handler.cpp
+  ${CMAKE_SOURCE_DIR}/src/server/base/ihttp_requests_observer.cpp
+
   ${CMAKE_SOURCE_DIR}/src/server/sync_finder.cpp
   ${CMAKE_SOURCE_DIR}/src/server/child_stream.cpp
   ${CMAKE_SOURCE_DIR}/src/server/process_slave_wrapper.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/daemon_client.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/daemon_server.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/daemon_commands.cpp
   ${CMAKE_SOURCE_DIR}/src/server/stream_struct_utils.cpp
   ${CMAKE_SOURCE_DIR}/src/server/config.cpp
-  ${CMAKE_SOURCE_DIR}/src/server/ihttp_requests_observer.cpp
 
   ${SERVER_HTTP_SOURCES}
   ${SERVER_VODS_SOURCES}
   ${SERVER_SUBSCRIBERS_SOURCES}
-  ${DAEMONS_SOURCES_COMANDS_INFO}
+  ${SERVER_DAEMON_SOURCES}
 )
 
 SET(PERF_OBSERVER_HEADERS

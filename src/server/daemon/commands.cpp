@@ -12,7 +12,7 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/daemon_commands.h"
+#include "server/daemon/commands.h"
 
 namespace iptv_cloud {
 namespace server {

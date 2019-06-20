@@ -12,20 +12,39 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "server/daemon/commands_info/stream/stream_info.h"
 
-#include "server/commands_info/stream/stream_info.h"
+#define STREAM_INFO_STREAM_ID_FIELD "id"
 
 namespace iptv_cloud {
 namespace server {
 namespace stream {
 
-class StopInfo : public StreamInfo {
- public:
-  typedef StreamInfo base_class;
-  StopInfo();
-  explicit StopInfo(stream_id_t stream_id);
-};
+StreamInfo::StreamInfo() : base_class(), stream_id_() {}
+
+StreamInfo::StreamInfo(stream_id_t stream_id) : stream_id_(stream_id) {}
+
+stream_id_t StreamInfo::GetStreamID() const {
+  return stream_id_;
+}
+
+common::Error StreamInfo::DoDeSerialize(json_object* serialized) {
+  json_object* jid = nullptr;
+  json_bool jid_exists = json_object_object_get_ex(serialized, STREAM_INFO_STREAM_ID_FIELD, &jid);
+  if (!jid_exists) {
+    return common::make_error_inval();
+  }
+
+  StreamInfo inf;
+  inf.stream_id_ = json_object_get_string(jid);
+  *this = inf;
+  return common::Error();
+}
+
+common::Error StreamInfo::SerializeFields(json_object* out) const {
+  json_object_object_add(out, STREAM_INFO_STREAM_ID_FIELD, json_object_new_string(stream_id_.c_str()));
+  return common::Error();
+}
 
 }  // namespace stream
 }  // namespace server

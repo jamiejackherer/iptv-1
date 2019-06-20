@@ -23,10 +23,10 @@
 #include "protocol/types.h"
 #include "utils/arg_reader.h"
 
+#include "server/base/ihttp_requests_observer.h"
 #include "server/base/iserver_handler.h"
-#include "server/commands_info/stream/start_info.h"
 #include "server/config.h"
-#include "server/ihttp_requests_observer.h"
+#include "server/daemon/commands_info/stream/start_info.h"
 
 namespace iptv_cloud {
 namespace server {
@@ -37,7 +37,7 @@ class ProtocoledPipeClient;
 }
 class ProtocoledDaemonClient;
 
-class ProcessSlaveWrapper : public base::IServerHandler, public server::IHttpRequestsObserver {
+class ProcessSlaveWrapper : public base::IServerHandler, public server::base::IHttpRequestsObserver {
  public:
   enum { node_stats_send_seconds = 10, ping_timeout_clients_seconds = 60, cleanup_seconds = 3 };
   typedef utils::ArgsMap serialized_stream_t;

@@ -14,19 +14,20 @@
 
 #pragma once
 
-#include <common/file_system/path.h>
-#include <common/libev/http/http_client.h>
+#include <string>
+
+#include "server/daemon/commands_info/service/license_info.h"
 
 namespace iptv_cloud {
 namespace server {
+namespace service {
 
-class IHttpRequestsObserver {
+class ActivateInfo : public LicenseInfo {
  public:
-  typedef common::file_system::ascii_file_string_path file_path_t;
-
-  virtual void OnHttpRequest(common::libev::http::HttpClient* client, const file_path_t& file) = 0;
-  virtual ~IHttpRequestsObserver();
+  ActivateInfo();
+  explicit ActivateInfo(const std::string& license);
 };
 
+}  // namespace service
 }  // namespace server
 }  // namespace iptv_cloud

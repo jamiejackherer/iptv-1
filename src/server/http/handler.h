@@ -22,14 +22,16 @@ namespace iptv_cloud {
 namespace server {
 
 class HttpClient;
+namespace base {
 class IHttpRequestsObserver;
+}
 
 class HttpHandler : public base::IServerHandler {
  public:
   enum { BUF_SIZE = 4096 };
   typedef base::IServerHandler base_class;
   typedef common::file_system::ascii_directory_string_path http_directory_path_t;
-  explicit HttpHandler(IHttpRequestsObserver* observer);
+  explicit HttpHandler(base::IHttpRequestsObserver* observer);
 
   void SetHttpRoot(const http_directory_path_t& http_root);
 
@@ -54,7 +56,7 @@ class HttpHandler : public base::IServerHandler {
   void ProcessReceived(HttpClient* hclient, const char* request, size_t req_len);
 
   http_directory_path_t http_root_;
-  IHttpRequestsObserver* observer_;
+  base::IHttpRequestsObserver* observer_;
 };
 
 }  // namespace server

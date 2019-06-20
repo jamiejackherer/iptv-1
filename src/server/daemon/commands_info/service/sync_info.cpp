@@ -12,7 +12,7 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/commands_info/service/sync_info.h"
+#include "server/daemon/commands_info/service/sync_info.h"
 
 #define SYNC_INFO_STREAMS_FIELD "streams"
 #define SYNC_INFO_USERS_FIELD "subscribers"

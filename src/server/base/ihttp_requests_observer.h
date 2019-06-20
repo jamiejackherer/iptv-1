@@ -14,20 +14,21 @@
 
 #pragma once
 
-#include "server/commands_info/stream/stream_info.h"
+#include <common/file_system/path.h>
+#include <common/libev/http/http_client.h>
 
 namespace iptv_cloud {
 namespace server {
-namespace stream {
+namespace base {
 
-class RestartInfo : public StreamInfo {
+class IHttpRequestsObserver {
  public:
-  typedef StreamInfo base_class;
+  typedef common::file_system::ascii_file_string_path file_path_t;
 
-  RestartInfo();
-  explicit RestartInfo(stream_id_t stream_id);
+  virtual void OnHttpRequest(common::libev::http::HttpClient* client, const file_path_t& file) = 0;
+  virtual ~IHttpRequestsObserver();
 };
 
-}  // namespace stream
+}  // namespace base
 }  // namespace server
 }  // namespace iptv_cloud

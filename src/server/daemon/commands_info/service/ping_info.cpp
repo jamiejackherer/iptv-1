@@ -16,7 +16,7 @@
     along with FastoTV. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/commands_info/service/ping_info.h"
+#include "server/daemon/commands_info/service/ping_info.h"
 
 #define SERVER_INFO_TIMESTAMP_FIELD "timestamp"
 #define CLIENT_INFO_TIMESTAMP_FIELD "timestamp"

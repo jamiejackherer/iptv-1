@@ -12,14 +12,18 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/ihttp_requests_observer.h"
+#include "server/daemon/commands_info/stream/restart_info.h"
+
+#define RESTART_INFO_STREAM_ID_FIELD "id"
 
 namespace iptv_cloud {
 namespace server {
+namespace stream {
 
-void IHttpRequestsObserver::OnHttpRequest(common::libev::http::HttpClient* client, const file_path_t& file) {}
+RestartInfo::RestartInfo() : base_class() {}
 
-IHttpRequestsObserver::~IHttpRequestsObserver() {}
+RestartInfo::RestartInfo(stream_id_t stream_id) : base_class(stream_id) {}
 
+}  // namespace stream
 }  // namespace server
 }  // namespace iptv_cloud

@@ -12,22 +12,19 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "server/daemon/server.h"
 
-#include <string>
-
-#include "server/commands_info/service/license_info.h"
+#include "server/daemon/client.h"
 
 namespace iptv_cloud {
 namespace server {
-namespace service {
 
-class ActivateInfo : public LicenseInfo {
- public:
-  ActivateInfo();
-  explicit ActivateInfo(const std::string& license);
-};
+DaemonServer::DaemonServer(const common::net::HostAndPort& host, common::libev::IoLoopObserver* observer)
+    : base_class(host, true, observer) {}
 
-}  // namespace service
+common::libev::tcp::TcpClient* DaemonServer::CreateClient(const common::net::socket_info& info) {
+  return new ProtocoledDaemonClient(this, info);
+}
+
 }  // namespace server
 }  // namespace iptv_cloud

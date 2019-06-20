@@ -12,28 +12,16 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/daemon_client.h"
+#include "server/daemon/commands_info/stream/stop_info.h"
 
 namespace iptv_cloud {
 namespace server {
+namespace stream {
 
-DaemonClient::DaemonClient(common::libev::IoLoop* server, const common::net::socket_info& info)
-    : base_class(server, info), is_verified_(false) {}
+StopInfo::StopInfo() : base_class() {}
 
-bool DaemonClient::IsVerified() const {
-  return is_verified_;
-}
+StopInfo::StopInfo(stream_id_t stream_id) : base_class(stream_id) {}
 
-void DaemonClient::SetVerified(bool verif) {
-  is_verified_ = verif;
-}
-
-const char* DaemonClient::ClassName() const {
-  return "DaemonClient";
-}
-
-ProtocoledDaemonClient::ProtocoledDaemonClient(common::libev::IoLoop* server, const common::net::socket_info& info)
-    : base_class(server, info) {}
-
+}  // namespace stream
 }  // namespace server
 }  // namespace iptv_cloud

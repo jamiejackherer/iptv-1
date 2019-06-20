@@ -14,29 +14,34 @@
 
 #pragma once
 
-#include "server/commands_info/stream/stream_info.h"
+#include <string>
+
+#include <common/uri/url.h>
+
+#include "server/daemon/commands_info/stream/stream_info.h"
 
 namespace iptv_cloud {
 namespace server {
 namespace stream {
 
-class QuitStatusInfo : public StreamInfo {
+class GetLogInfo : public StreamInfo {
  public:
   typedef StreamInfo base_class;
+  typedef common::uri::Url url_t;
 
-  QuitStatusInfo();
-  explicit QuitStatusInfo(stream_id_t stream_id, int exit_status, int signal);
+  GetLogInfo();
+  explicit GetLogInfo(stream_id_t stream_id, const std::string& feedback_dir, const url_t& log_path);
 
-  int GetSignal() const;
-  int GetExitStatus() const;
+  url_t GetLogPath() const;
+  std::string GetFeedbackDir() const;
 
  protected:
   common::Error DoDeSerialize(json_object* serialized) override;
   common::Error SerializeFields(json_object* out) const override;
 
  private:
-  int exit_status_;
-  int signal_;
+  std::string feedback_dir_;
+  common::uri::Url path_;
 };
 
 }  // namespace stream

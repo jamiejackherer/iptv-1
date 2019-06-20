@@ -12,16 +12,16 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/commands_info/stream/stop_info.h"
+#include "server/base/ihttp_requests_observer.h"
 
 namespace iptv_cloud {
 namespace server {
-namespace stream {
+namespace base {
 
-StopInfo::StopInfo() : base_class() {}
+void IHttpRequestsObserver::OnHttpRequest(common::libev::http::HttpClient* client, const file_path_t& file) {}
 
-StopInfo::StopInfo(stream_id_t stream_id) : base_class(stream_id) {}
+IHttpRequestsObserver::~IHttpRequestsObserver() {}
 
-}  // namespace stream
+}  // namespace base
 }  // namespace server
 }  // namespace iptv_cloud

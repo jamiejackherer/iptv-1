@@ -22,12 +22,12 @@
 #include <utility>
 
 #include "server/http/client.h"
-#include "server/ihttp_requests_observer.h"
+#include "server/base/ihttp_requests_observer.h"
 
 namespace iptv_cloud {
 namespace server {
 
-HttpHandler::HttpHandler(IHttpRequestsObserver* observer)
+HttpHandler::HttpHandler(base::IHttpRequestsObserver* observer)
     : base_class(), http_root_(http_directory_path_t::MakeHomeDir()), observer_(observer) {}
 
 void HttpHandler::SetHttpRoot(const http_directory_path_t& http_root) {

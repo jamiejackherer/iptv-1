@@ -12,7 +12,7 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/commands_info/service/server_info.h"
+#include "server/daemon/commands_info/service/server_info.h"
 
 #define STATISTIC_SERVICE_INFO_UPTIME_FIELD "uptime"
 #define STATISTIC_SERVICE_INFO_TIMESTAMP_FIELD "timestamp"

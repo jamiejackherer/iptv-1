@@ -21,13 +21,13 @@
 #include <string>
 #include <utility>
 
-#include "server/ihttp_requests_observer.h"
+#include "server/base/ihttp_requests_observer.h"
 #include "server/vods/client.h"
 
 namespace iptv_cloud {
 namespace server {
 
-VodsHandler::VodsHandler(IHttpRequestsObserver* observer)
+VodsHandler::VodsHandler(base::IHttpRequestsObserver* observer)
     : base_class(), vods_root_(vods_directory_path_t::MakeHomeDir()), observer_(observer) {}
 
 void VodsHandler::SetVodsRoot(const vods_directory_path_t& vods_root) {

@@ -12,7 +12,7 @@
     along with iptv_cloud.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "server/commands_info/stream/quit_status_info.h"
+#include "server/daemon/commands_info/stream/quit_status_info.h"
 
 #define STATUS_STREAM_INFO_SIGNAL_FIELD "signal"
 #define STATUS_STREAM_INFO_EXIT_STATUS_FIELD "exit_status"
