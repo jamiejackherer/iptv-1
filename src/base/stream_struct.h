@@ -39,30 +39,29 @@ struct StreamInfo {
 struct StreamStruct {
   StreamStruct();
   explicit StreamStruct(const StreamInfo& sha);
-  StreamStruct(const StreamInfo& sha, time_t start_time, time_t lst, size_t rest);
+  StreamStruct(const StreamInfo& sha, fastotv::timestamp_t start_time, fastotv::timestamp_t lst, size_t rest);
   StreamStruct(stream_id_t sid,
                StreamType type,
                StreamStatus status,
                input_channels_info_t input,
                output_channels_info_t output,
-               time_t start_time,
-               time_t lst,
+               fastotv::timestamp_t start_time,
+               fastotv::timestamp_t lst,
                size_t rest);
 
   bool IsValid() const;
 
   ~StreamStruct();
 
-  time_t WithoutRestartTime() const;
+  fastotv::timestamp_t WithoutRestartTime() const;
 
   void ResetDataWait();
 
   stream_id_t id;
   StreamType type;
 
-  time_t start_time;  // sec
-
-  time_t loop_start_time;
+  fastotv::timestamp_t start_time;
+  fastotv::timestamp_t loop_start_time;
   size_t restarts;
   StreamStatus status;
 

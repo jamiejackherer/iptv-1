@@ -32,11 +32,11 @@ channel_id_t ChannelStats::GetID() const {
   return id_;
 }
 
-time_t ChannelStats::GetLastUpdateTime() const {
+fastotv::timestamp_t ChannelStats::GetLastUpdateTime() const {
   return last_update_time_;
 }
 
-void ChannelStats::SetLastUpdateTime(time_t t) {
+void ChannelStats::SetLastUpdateTime(fastotv::timestamp_t t) {
   last_update_time_ = t;
 }
 
@@ -78,7 +78,7 @@ void ChannelStats::UpdateCheckPoint() {
 
 void ChannelStats::SetTotalBytes(size_t bytes) {
   total_bytes_ = bytes;
-  last_update_time_ = common::time::current_mstime();
+  last_update_time_ = common::time::current_utc_mstime();
 }
 
 void ChannelStats::SetDesireBytesPerSecond(const common::media::DesireBytesPerSec& bps) {

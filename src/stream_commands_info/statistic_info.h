@@ -27,12 +27,12 @@ class StatisticInfo : public common::serializer::JsonSerializer<StatisticInfo> {
   typedef uint64_t rss_t;
 
   StatisticInfo();
-  StatisticInfo(const StreamStruct& str, cpu_load_t cpu_load, rss_t rss_bytes, time_t time);
+  StatisticInfo(const StreamStruct& str, cpu_load_t cpu_load, rss_t rss_bytes, fastotv::timestamp_t utc_time);
 
   StreamStruct GetStreamStruct() const;
   cpu_load_t GetCpuLoad() const;
   rss_t GetRssBytes() const;
-  time_t GetTimestamp() const;
+  fastotv::timestamp_t GetTimestamp() const;
 
  protected:
   common::Error SerializeFields(json_object* out) const override;
@@ -42,7 +42,7 @@ class StatisticInfo : public common::serializer::JsonSerializer<StatisticInfo> {
   StreamStruct stream_struct_;
   cpu_load_t cpu_load_;
   rss_t rss_bytes_;
-  time_t timestamp_;
+  fastotv::timestamp_t timestamp_;  // utc
 };
 
 }  // namespace iptv_cloud

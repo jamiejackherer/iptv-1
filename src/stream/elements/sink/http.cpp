@@ -28,7 +28,7 @@ HlsOutput MakeHlsOutput(const common::uri::Url& uri,
                         const std::string& filename) {
   elements::sink::HlsOutput hout;
   const std::string http_root_str = http_root.GetPath();
-  time_t t = common::time::current_mstime() / 1000;
+  fastotv::timestamp_t t = common::time::current_utc_mstime();
   hout.location = http_root_str + GenHttpTsTemplate(t);
   hout.play_locataion = http_root_str + filename;
   hout.playlist_root = uri.GetHpath();

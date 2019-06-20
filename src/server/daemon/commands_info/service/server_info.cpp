@@ -111,7 +111,7 @@ ServerInfo::ServerInfo(int cpu_load,
                        uint64_t net_bytes_recv,
                        uint64_t net_bytes_send,
                        const utils::SysinfoShot& sys,
-                       time_t timestamp,
+                       fastotv::timestamp_t timestamp,
                        const OnlineUsers& online_users)
     : base_class(),
       cpu_load_(cpu_load),
@@ -274,7 +274,7 @@ fastotv::bandwidth_t ServerInfo::GetNetBytesSend() const {
   return net_bytes_send_;
 }
 
-time_t ServerInfo::GetTimestamp() const {
+fastotv::timestamp_t ServerInfo::GetTimestamp() const {
   return current_ts_;
 }
 

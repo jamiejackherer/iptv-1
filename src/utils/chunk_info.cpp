@@ -59,7 +59,7 @@ bool ConvertFromString(const std::string& from, iptv_cloud::utils::ChunkInfo* ou
         }
 
         std::string lts_str = from.substr(i + 1);
-        time_t lts;
+        uint64_t lts;
         if (ConvertFromString(lts_str, &lts)) {
           res.duration = lts;
         }

@@ -18,43 +18,14 @@
 
 #pragma once
 
-#include <common/time.h>
-
-#include <common/serializer/json_serializer.h>
+#include <fastotv/commands_info/ping_info.h>
 
 namespace iptv_cloud {
 namespace server {
 namespace service {
 
-typedef common::time64_t timestamp_t;
-
-class ServerPingInfo : public common::serializer::JsonSerializer<ServerPingInfo> {
- public:
-  ServerPingInfo();
-
-  timestamp_t GetTimeStamp() const;
-
- protected:
-  common::Error DoDeSerialize(json_object* serialized) override;
-  common::Error SerializeFields(json_object* out) const override;
-
- private:
-  timestamp_t timestamp_;  // utc time
-};
-
-class ClientPingInfo : public common::serializer::JsonSerializer<ClientPingInfo> {
- public:
-  ClientPingInfo();
-
-  timestamp_t GetTimeStamp() const;
-
- protected:
-  common::Error DoDeSerialize(json_object* serialized) override;
-  common::Error SerializeFields(json_object* out) const override;
-
- private:
-  timestamp_t timestamp_;  // utc time
-};
+typedef fastotv::commands_info::ServerPingInfo ServerPingInfo;
+typedef fastotv::commands_info::ClientPingInfo ClientPingInfo;
 
 }  // namespace service
 }  // namespace server

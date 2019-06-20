@@ -19,6 +19,7 @@
 #include <string>  // for string
 
 #include <common/optional.h>
+#include <fastotv/client_server_types.h>
 
 #define TS_EXTENSION "ts"
 #define M3U8_EXTENSION "m3u8"
@@ -30,7 +31,7 @@
 namespace iptv_cloud {
 
 typedef uint64_t channel_id_t;
-typedef std::string stream_id_t;
+typedef fastotv::stream_id stream_id_t;
 typedef common::Optional<double> volume_t;
 typedef double alpha_t;
 typedef common::Optional<int> bit_rate_t;

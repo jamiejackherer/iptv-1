@@ -27,8 +27,8 @@ class ChannelStats {  // only compile time size fields
 
   channel_id_t GetID() const;
 
-  time_t GetLastUpdateTime() const;
-  void SetLastUpdateTime(time_t t);
+  fastotv::timestamp_t GetLastUpdateTime() const;
+  void SetLastUpdateTime(fastotv::timestamp_t t);
 
   size_t GetTotalBytes() const;
   void SetTotalBytes(size_t bytes);
@@ -50,10 +50,10 @@ class ChannelStats {  // only compile time size fields
  private:
   channel_id_t id_;
 
-  time_t last_update_time_;  // up_time
-  size_t total_bytes_;       // received bytes
-  size_t prev_total_bytes_;  // checkpoint received bytes
-  size_t bytes_per_second_;  // bps
+  fastotv::timestamp_t last_update_time_;  // up_time
+  size_t total_bytes_;                     // received bytes
+  size_t prev_total_bytes_;                // checkpoint received bytes
+  size_t bytes_per_second_;                // bps
 
   common::media::DesireBytesPerSec desire_bytes_per_second_;
 };

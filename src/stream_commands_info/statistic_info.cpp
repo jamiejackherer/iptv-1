@@ -33,10 +33,13 @@
 
 namespace iptv_cloud {
 
-StatisticInfo::StatisticInfo() : stream_struct_(), cpu_load_(), rss_bytes_(), timestamp_() {}
+StatisticInfo::StatisticInfo() : stream_struct_(), cpu_load_(), rss_bytes_(), timestamp_(0) {}
 
-StatisticInfo::StatisticInfo(const StreamStruct& str, cpu_load_t cpu_load, rss_t rss_bytes, time_t time)
-    : stream_struct_(str), cpu_load_(cpu_load), rss_bytes_(rss_bytes), timestamp_(time) {
+StatisticInfo::StatisticInfo(const StreamStruct& str,
+                             cpu_load_t cpu_load,
+                             rss_t rss_bytes,
+                             fastotv::timestamp_t utc_time)
+    : stream_struct_(str), cpu_load_(cpu_load), rss_bytes_(rss_bytes), timestamp_(utc_time) {
   /*cpu_load_t cpu_load = cpu_load_;
   if (isnan(cpu_load_) || isinf(cpu_load_)) {
     cpu_load = 0.0;
@@ -55,7 +58,7 @@ StatisticInfo::rss_t StatisticInfo::GetRssBytes() const {
   return rss_bytes_;
 }
 
-time_t StatisticInfo::GetTimestamp() const {
+fastotv::timestamp_t StatisticInfo::GetTimestamp() const {
   return timestamp_;
 }
 
@@ -97,9 +100,9 @@ common::Error StatisticInfo::SerializeFields(json_object* out) const {
   json_object_object_add(out, FIELD_STREAM_LOOP_START_TIME, json_object_new_int64(stream_struct_.loop_start_time));
   json_object_object_add(out, FIELD_STREAM_RSS, json_object_new_int64(rss_bytes_));
   json_object_object_add(out, FIELD_STREAM_CPU, json_object_new_double(cpu_load_));
-  json_object_object_add(out, FIELD_STREAM_STATUS, json_object_new_int(stream_struct_.status));
+  json_object_object_add(out, FIELD_STREAM_STATUS, json_object_new_int64(stream_struct_.status));
   json_object_object_add(out, FIELD_STREAM_RESTARTS, json_object_new_int64(stream_struct_.restarts));
-  json_object_object_add(out, FIELD_STREAM_START_TIME, json_object_new_int(stream_struct_.start_time));
+  json_object_object_add(out, FIELD_STREAM_START_TIME, json_object_new_int64(stream_struct_.start_time));
   json_object_object_add(out, FIELD_STREAM_TIMESTAMP, json_object_new_int64(timestamp_));
   return common::Error();
 }
@@ -174,18 +177,18 @@ common::Error StatisticInfo::DoDeSerialize(json_object* serialized) {
     rss = json_object_get_int(jrss);
   }
 
-  time_t time = 0;
+  fastotv::timestamp_t time = 0;
   json_object* jtime = nullptr;
   json_bool jtime_exists = json_object_object_get_ex(serialized, FIELD_STREAM_TIMESTAMP, &jtime);
   if (jtime_exists) {
-    time = json_object_get_int(jtime);
+    time = json_object_get_int64(jtime);
   }
 
-  time_t start_time = 0;
+  fastotv::timestamp_t start_time = 0;
   json_object* jstart_time = nullptr;
   json_bool jstart_time_exists = json_object_object_get_ex(serialized, FIELD_STREAM_START_TIME, &jstart_time);
   if (jstart_time_exists) {
-    start_time = json_object_get_int(jstart_time);
+    start_time = json_object_get_int64(jstart_time);
   }
 
   size_t restarts = 0;
@@ -195,7 +198,7 @@ common::Error StatisticInfo::DoDeSerialize(json_object* serialized) {
     restarts = json_object_get_int64(jrestarts);
   }
 
-  time_t loop_start_time = 0;
+  fastotv::timestamp_t loop_start_time = 0;
   json_object* jloop_start_time = nullptr;
   json_bool jloop_start_time_exists =
       json_object_object_get_ex(serialized, FIELD_STREAM_LOOP_START_TIME, &jloop_start_time);

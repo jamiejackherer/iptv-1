@@ -282,12 +282,12 @@ bool CheckIsFullVod(const common::file_system::ascii_file_string_path& file) {
 }  // namespace
 
 struct ProcessSlaveWrapper::NodeStats {
-  NodeStats() : prev(), prev_nshot(), gpu_load(0), timestamp(common::time::current_mstime() / 1000) {}
+  NodeStats() : prev(), prev_nshot(), gpu_load(0), timestamp(common::time::current_utc_mstime()) {}
 
   utils::CpuShot prev;
   utils::NetShot prev_nshot;
   int gpu_load;
-  time_t timestamp;
+  fastotv::timestamp_t timestamp;
 };
 
 ProcessSlaveWrapper::ProcessSlaveWrapper(const std::string& license_key, const Config& config)
@@ -434,7 +434,8 @@ int ProcessSlaveWrapper::Exec(int argc, char** argv) {
     UNUSED(res);
   });
 
-  subscribers::SubscribersServer* subscribers_server = static_cast<subscribers::SubscribersServer*>(subscribers_server_);
+  subscribers::SubscribersServer* subscribers_server =
+      static_cast<subscribers::SubscribersServer*>(subscribers_server_);
   std::thread subscribers_thread = std::thread([subscribers_server] {
     common::ErrnoError err = subscribers_server->Bind(true);
     if (err) {
@@ -468,7 +469,7 @@ int ProcessSlaveWrapper::Exec(int argc, char** argv) {
 
   node_stats_->prev = utils::GetMachineCpuShot();
   node_stats_->prev_nshot = utils::GetMachineNetShot();
-  node_stats_->timestamp = common::time::current_mstime() / 1000;
+  node_stats_->timestamp = common::time::current_utc_mstime();
   res = server->Exec();
 
 finished:
@@ -1521,8 +1522,8 @@ std::string ProcessSlaveWrapper::MakeServiceStats(bool full_stat) const {
   utils::HddShot hdd_shot = utils::GetMachineHddShot();
   utils::SysinfoShot sshot = utils::GetMachineSysinfoShot();
   std::string uptime_str = common::MemSPrintf("%lu %lu %lu", sshot.loads[0], sshot.loads[1], sshot.loads[2]);
-  time_t current_time = common::time::current_mstime() / 1000;
-  time_t ts_diff = current_time - node_stats_->timestamp;
+  fastotv::timestamp_t current_time = common::time::current_utc_mstime();
+  fastotv::timestamp_t ts_diff = (current_time - node_stats_->timestamp) / 1000;
   if (ts_diff == 0) {
     ts_diff = 1;  // divide by zero
   }

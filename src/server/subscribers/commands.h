@@ -36,7 +36,8 @@ fastotv::protocol::response_t ActivateResponseSuccess(fastotv::protocol::sequanc
 fastotv::protocol::response_t ActivateResponseFail(fastotv::protocol::sequance_id_t id, const std::string& error_text);
 
 // client ping
-fastotv::protocol::response_t PingResponseSuccess(fastotv::protocol::sequance_id_t id, fastotv::protocol::serializet_params_t params);
+fastotv::protocol::response_t PingResponseSuccess(fastotv::protocol::sequance_id_t id,
+                                                  fastotv::protocol::serializet_params_t params);
 
 // server info
 fastotv::protocol::response_t GetServerInfoResponceSuccsess(fastotv::protocol::sequance_id_t id,

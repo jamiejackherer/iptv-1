@@ -34,7 +34,7 @@ struct Config {
   common::net::HostAndPort vods_host;
   common::net::HostAndPort subscribers_host;
   common::net::HostAndPort bandwidth_host;
-  time_t ttl_files_;
+  time_t ttl_files_;  // in seconds
 };
 
 common::ErrnoError load_config_from_file(const std::string& config_absolute_path, Config* config) WARN_UNUSED_RESULT;

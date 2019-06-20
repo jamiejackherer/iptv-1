@@ -18,59 +18,8 @@
 
 #include "server/daemon/commands_info/service/ping_info.h"
 
-#define SERVER_INFO_TIMESTAMP_FIELD "timestamp"
-#define CLIENT_INFO_TIMESTAMP_FIELD "timestamp"
-
 namespace iptv_cloud {
 namespace server {
-namespace service {
-
-ServerPingInfo::ServerPingInfo() : timestamp_(common::time::current_utc_mstime()) {}
-
-common::Error ServerPingInfo::SerializeFields(json_object* out) const {
-  json_object_object_add(out, SERVER_INFO_TIMESTAMP_FIELD, json_object_new_int64(timestamp_));
-  return common::Error();
-}
-
-common::Error ServerPingInfo::DoDeSerialize(json_object* serialized) {
-  json_object* jtimestamp = nullptr;
-  json_bool jtimestamp_exists = json_object_object_get_ex(serialized, SERVER_INFO_TIMESTAMP_FIELD, &jtimestamp);
-  ServerPingInfo inf;
-  if (jtimestamp_exists) {
-    inf.timestamp_ = json_object_get_int64(jtimestamp);
-  }
-
-  *this = inf;
-  return common::Error();
-}
-
-timestamp_t ServerPingInfo::GetTimeStamp() const {
-  return timestamp_;
-}
-
-ClientPingInfo::ClientPingInfo() : timestamp_(common::time::current_utc_mstime()) {}
-
-common::Error ClientPingInfo::SerializeFields(json_object* out) const {
-  json_object_object_add(out, CLIENT_INFO_TIMESTAMP_FIELD, json_object_new_int64(timestamp_));
-  return common::Error();
-}
-
-common::Error ClientPingInfo::DoDeSerialize(json_object* serialized) {
-  json_object* jtimestamp = nullptr;
-  json_bool jtimestamp_exists = json_object_object_get_ex(serialized, CLIENT_INFO_TIMESTAMP_FIELD, &jtimestamp);
-  ClientPingInfo inf;
-  if (jtimestamp_exists) {
-    inf.timestamp_ = json_object_get_int64(jtimestamp);
-  }
-
-  *this = inf;
-  return common::Error();
-}
-
-timestamp_t ClientPingInfo::GetTimeStamp() const {
-  return timestamp_;
-}
-
-}  // namespace service
+namespace service {}  // namespace service
 }  // namespace server
 }  // namespace iptv_cloud

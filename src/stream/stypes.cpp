@@ -210,7 +210,7 @@ bool IsRawStreamFromType(const std::string& type, SupportedRawStream* rc) {
   return false;
 }
 
-std::string GenHttpTsTemplate(time_t msec) {
+std::string GenHttpTsTemplate(fastotv::timestamp_t msec) {
   return common::MemSPrintf("%lu_%s", msec, TS_TEMPLATE);
 }
 

@@ -78,7 +78,7 @@ bool PrepareStatus(StreamStruct* stats, double cpu_load, std::string* status_out
   }
 
   long rss = common::system_info::GetProcessRss(getpid());
-  const time_t current_time = common::time::current_mstime() / 1000;
+  const fastotv::timestamp_t current_time = common::time::current_utc_mstime();
   StatisticInfo sinf(*stats, cpu_load, rss * 1024, current_time);
 
   std::string out;
@@ -225,7 +225,7 @@ int StreamController::Exec() {
 
     int stabled_status = EXIT_SUCCESS;
     int signal_number = 0;
-    time_t start_utc_now = common::time::current_mstime() / 1000;
+    fastotv::timestamp_t start_utc_now = common::time::current_utc_mstime();
     origin_ = StreamsFactory::GetInstance().CreateStream(config_, this, mem_, timeshift_info_, start_chunk_index);
     if (!origin_) {
       CRITICAL_LOG() << "Can't create stream";
@@ -239,10 +239,10 @@ int StreamController::Exec() {
       stabled_status = EXIT_FAILURE;
     }
 
-    time_t end_utc_now = common::time::current_mstime() / 1000;
-    time_t diff_utc_time = end_utc_now - start_utc_now;
+    fastotv::timestamp_t end_utc_now = common::time::current_utc_mstime();
+    fastotv::timestamp_t diff_utc_time = end_utc_now - start_utc_now;
     INFO_LOG() << "Stream exit with status: " << (stabled_status ? "FAILURE" : "SUCCESS")
-               << ", signal: " << signal_number << ", working time: " << diff_utc_time << " seconds.";
+               << ", signal: " << signal_number << ", working time: " << diff_utc_time << " msec.";
     if (is_vod) {
       break;
     }

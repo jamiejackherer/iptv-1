@@ -56,7 +56,7 @@ class ServerInfo : public common::serializer::JsonSerializer<ServerInfo> {
                       fastotv::bandwidth_t net_bytes_recv,
                       fastotv::bandwidth_t net_bytes_send,
                       const utils::SysinfoShot& sys,
-                      time_t timestamp,
+                      fastotv::timestamp_t timestamp,
                       const OnlineUsers& online_users);
 
   int GetCpuLoad() const;
@@ -66,7 +66,7 @@ class ServerInfo : public common::serializer::JsonSerializer<ServerInfo> {
   utils::HddShot GetHddShot() const;
   fastotv::bandwidth_t GetNetBytesRecv() const;
   fastotv::bandwidth_t GetNetBytesSend() const;
-  time_t GetTimestamp() const;
+  fastotv::timestamp_t GetTimestamp() const;
   OnlineUsers GetOnlineUsers() const;
 
  protected:
@@ -81,7 +81,7 @@ class ServerInfo : public common::serializer::JsonSerializer<ServerInfo> {
   utils::HddShot hdd_shot_;
   fastotv::bandwidth_t net_bytes_recv_;
   fastotv::bandwidth_t net_bytes_send_;
-  time_t current_ts_;
+  fastotv::timestamp_t current_ts_;
   utils::SysinfoShot sys_shot_;
   OnlineUsers online_users_;
 };

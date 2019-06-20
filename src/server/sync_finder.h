@@ -24,13 +24,13 @@ namespace server {
 
 class SyncFinder : public subscribers::ISubscribeFinder {
  public:
-  typedef std::map<fastotv::login_t, subscribers::commands_info::UserInfo> users_t;
+  typedef subscribers::commands_info::UserInfo user_t;
+  typedef std::map<fastotv::login_t, user_t> users_t;
 
   SyncFinder();
-  common::Error FindUser(const fastotv::commands_info::AuthInfo& user,
-                         subscribers::commands_info::UserInfo* uinf) const override;
+  common::Error FindUser(const fastotv::commands_info::AuthInfo& user, user_t* uinf) const override;
   void Clear();
-  void AddUser(const subscribers::commands_info::UserInfo& user);
+  void AddUser(const user_t& user);
 
  private:
   users_t users_;

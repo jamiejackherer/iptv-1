@@ -38,7 +38,7 @@ common::Error ChannelStatsInfo::SerializeFields(json_object* out) const {
   channel_id_t sid = stats_.GetID();
   json_object_object_add(out, FIELD_STATS_ID, json_object_new_int64(sid));
 
-  time_t last = stats_.GetLastUpdateTime();
+  fastotv::timestamp_t last = stats_.GetLastUpdateTime();
   json_object_object_add(out, FIELD_STATS_LAST_UPDATE_TIME, json_object_new_int64(last));
 
   size_t prev_t = stats_.GetPrevTotalBytes();

@@ -54,9 +54,12 @@ input_channels_info_t make_inputs(const std::vector<channel_id_t>& input) {
 
 StreamStruct::StreamStruct() : StreamStruct(StreamInfo()) {}
 
-StreamStruct::StreamStruct(const StreamInfo& sha) : StreamStruct(sha, common::time::current_mstime() / 1000, 0, 0) {}
+StreamStruct::StreamStruct(const StreamInfo& sha) : StreamStruct(sha, common::time::current_utc_mstime(), 0, 0) {}
 
-StreamStruct::StreamStruct(const StreamInfo& sha, time_t start_time, time_t lst, size_t rest)
+StreamStruct::StreamStruct(const StreamInfo& sha,
+                           fastotv::timestamp_t start_time,
+                           fastotv::timestamp_t lst,
+                           size_t rest)
     : StreamStruct(sha.id, sha.type, NEW, make_inputs(sha.input), make_outputs(sha.output), start_time, lst, rest) {}
 
 StreamStruct::StreamStruct(stream_id_t sid,
@@ -64,8 +67,8 @@ StreamStruct::StreamStruct(stream_id_t sid,
                            StreamStatus status,
                            input_channels_info_t input,
                            output_channels_info_t output,
-                           time_t start_time,
-                           time_t lst,
+                           fastotv::timestamp_t start_time,
+                           fastotv::timestamp_t lst,
                            size_t rest)
     : id(sid),
       type(type),
@@ -82,12 +85,8 @@ bool StreamStruct::IsValid() const {
 
 StreamStruct::~StreamStruct() {}
 
-time_t StreamStruct::WithoutRestartTime() const {
-  const time_t current_time = common::time::current_mstime() / 1000;
-  if (!loop_start_time) {
-    return 0;
-  }
-
+fastotv::timestamp_t StreamStruct::WithoutRestartTime() const {
+  const fastotv::timestamp_t current_time = common::time::current_utc_mstime();
   return current_time - loop_start_time;
 }
 

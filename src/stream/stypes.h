@@ -152,7 +152,7 @@ bool IsVideoCodecFromType(const std::string& type, SupportedVideoCodec* vc);
 bool IsAudioCodecFromType(const std::string& type, SupportedAudioCodec* ac);
 bool IsRawStreamFromType(const std::string& type, SupportedRawStream* rc);
 
-std::string GenHttpTsTemplate(time_t msec);
+std::string GenHttpTsTemplate(fastotv::timestamp_t msec);
 std::string GenVodHttpTsTemplate();
 bool GetIndexFromHttpTsTemplate(const std::string& file_name, uint64_t* index);
 

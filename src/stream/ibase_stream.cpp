@@ -198,7 +198,7 @@ void IBaseStream::LinkOutputPad(GstPad* pad, element_id_t id) {
 }
 
 void IBaseStream::PreExecCleanup() {
-  const time_t cur_timestamp = common::time::current_mstime() / 1000;
+  const time_t cur_timestamp = common::time::current_mstime() / 1000;  // OK
   const time_t max_life_time = IsVod() ? cur_timestamp : cur_timestamp - cleanup_period_sec;
   for (const OutputUri& output : config_->GetOutput()) {
     common::uri::Url uri = output.GetOutput();
@@ -326,7 +326,7 @@ ExitStatus IBaseStream::Exec() {
   gst_object_unref(bus);
   SetStatus(INIT);
 
-  stats_->loop_start_time = common::time::current_mstime() / 1000;
+  stats_->loop_start_time = common::time::current_utc_mstime();
   ResetDataWait();
 
   Play();
@@ -442,7 +442,7 @@ void IBaseStream::SetVideoInited(bool val) {
 }
 
 void IBaseStream::Restart() {
-  stats_->loop_start_time = common::time::current_mstime() / 1000;
+  stats_->loop_start_time = common::time::current_utc_mstime();
   ResetDataWait();
 
   Pause();
@@ -489,8 +489,8 @@ StreamStruct* IBaseStream::GetStats() const {
 }
 
 time_t IBaseStream::GetElipsedTime() const {
-  const time_t current_time = common::time::current_mstime() / 1000;
-  return current_time - stats_->start_time;
+  const fastotv::timestamp_t current_time = common::time::current_utc_mstime();
+  return (current_time - stats_->start_time) / 1000;
 }
 
 StreamType IBaseStream::GetType() const {
@@ -538,21 +538,6 @@ void IBaseStream::OnInputDataFailed() {
 void IBaseStream::OnInputDataOK() {}
 
 gboolean IBaseStream::HandleMainTimerTick() {
-  /*for (InputUri input : api_->input()) {
-    akamai::AkamaiInfo ainf = input.GetAkamaiInfo();
-    if (ainf.isLinkGenerated()) {
-      time_t life_time = ainf.linkLifeTime();
-      time_t diff_sec = life_time - base::GetUtcNow();
-      if (diff_sec < 5) {
-        base::WARNING_MSG_FORMAT(CHANNEL_ID_FORMAT " Need to rebuild and play
-  new akamai link.", id());
-        //pause();
-
-        //play();
-      }
-    }
-  }*/
-
   const time_t up_time = GetElipsedTime();
   const size_t diff = (no_data_panic_sec - no_data_panic_tick_ + up_time) + 1;
 
@@ -737,9 +722,9 @@ gboolean IBaseStream::main_timer_callback(gpointer user_data) {
     Restart if no data, set new checkpoint
   */
   IBaseStream* stream = reinterpret_cast<IBaseStream*>(user_data);
-  const time_t start_ts = common::time::current_mstime();
+  const fastotv::timestamp_t start_ts = common::time::current_utc_mstime();
   gboolean res = stream->HandleMainTimerTick();
-  const time_t end_ts = common::time::current_mstime();
+  const fastotv::timestamp_t end_ts = common::time::current_utc_mstime();
   DEBUG_LOG() << "HandleMainTimerTick time is: " << end_ts - start_ts << " msec.";
   return res;
 }
