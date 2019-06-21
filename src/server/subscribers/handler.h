@@ -74,7 +74,7 @@ class SubscribersHandler : public base::IServerHandler {
   common::Error RegisterInnerConnectionByHost(const ServerAuthInfo& info,
                                               ProtocoledSubscriberClient* client) WARN_UNUSED_RESULT;
   common::Error UnRegisterInnerConnectionByHost(ProtocoledSubscriberClient* client) WARN_UNUSED_RESULT;
-  ProtocoledSubscriberClient* FindInnerConnectionByUser(const rpc::UserRpcInfo& user) const;
+  std::vector<ProtocoledSubscriberClient*> FindInnerConnectionsByUser(const rpc::UserRpcInfo& user) const;
 
   fastotv::protocol::sequance_id_t NextRequestID();
 

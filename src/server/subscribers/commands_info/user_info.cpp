@@ -18,6 +18,9 @@
 
 #include "server/subscribers/commands_info/user_info.h"
 
+#define DEVICE_INFO_ID_FIELD "id"
+#define DEVICE_INFO_CONNECTIONS_FIELD "connections"
+
 #define USER_INFO_ID_FIELD "id"
 #define USER_INFO_DEVICES_FIELD "devices"
 #define USER_INFO_CHANNELS_FIELD "channels"
@@ -29,6 +32,51 @@ namespace iptv_cloud {
 namespace server {
 namespace subscribers {
 namespace commands_info {
+
+DeviceInfo::DeviceInfo() : id_(), connections_() {}
+
+DeviceInfo::DeviceInfo(fastotv::device_id_t did, size_t connections) : id_(did), connections_(connections) {}
+
+common::Error DeviceInfo::DoDeSerialize(json_object* serialized) {
+  json_object* jdid = nullptr;
+  json_bool jdid_exists = json_object_object_get_ex(serialized, DEVICE_INFO_ID_FIELD, &jdid);
+  if (!jdid_exists) {
+    return common::make_error_inval();
+  }
+  fastotv::device_id_t did = json_object_get_string(jdid);
+
+  json_object* jconnections = nullptr;
+  json_bool jconnections_exists = json_object_object_get_ex(serialized, DEVICE_INFO_CONNECTIONS_FIELD, &jconnections);
+  if (!jconnections_exists) {
+    return common::make_error_inval();
+  }
+  size_t connections = json_object_get_int64(jconnections);
+
+  *this = DeviceInfo(did, connections);
+  return common::Error();
+}
+
+common::Error DeviceInfo::SerializeFields(json_object* deserialized) const {
+  if (!IsValid()) {
+    return common::make_error_inval();
+  }
+
+  json_object_object_add(deserialized, DEVICE_INFO_ID_FIELD, json_object_new_string(id_.c_str()));
+  json_object_object_add(deserialized, DEVICE_INFO_CONNECTIONS_FIELD, json_object_new_int64(connections_));
+  return common::Error();
+}
+
+bool DeviceInfo::IsValid() const {
+  return !id_.empty() && connections_ > 0;
+}
+
+fastotv::device_id_t DeviceInfo::GetDeviceID() const {
+  return id_;
+}
+
+size_t DeviceInfo::GetConnections() const {
+  return connections_;
+}
 
 UserInfo::UserInfo() : login_(), password_(), ch_(), devices_(), status_(BANNED) {}
 
@@ -67,8 +115,11 @@ common::Error UserInfo::SerializeFields(json_object* deserialized) const {
 
   json_object* jdevices = json_object_new_array();
   for (size_t i = 0; i < devices_.size(); ++i) {
-    json_object* jdevice = json_object_new_string(devices_[i].c_str());
-    json_object_array_add(jdevices, jdevice);
+    json_object* jdevice = nullptr;
+    err = devices_[i].Serialize(&jdevice);
+    if (!err) {
+      json_object_array_add(jdevices, jdevice);
+    }
   }
   json_object_object_add(deserialized, USER_INFO_DEVICES_FIELD, jdevices);
   return common::Error();
@@ -124,7 +175,11 @@ common::Error UserInfo::DoDeSerialize(json_object* serialized) {
     size_t len = json_object_array_length(jdevices);
     for (size_t i = 0; i < len; ++i) {
       json_object* jdevice = json_object_array_get_idx(jdevices, i);
-      devices.push_back(json_object_get_string(jdevice));
+      DeviceInfo dev;
+      common::Error err = dev.DeSerialize(jdevice);
+      if (!err) {
+        devices.push_back(dev);
+      }
     }
   }
 
@@ -132,14 +187,19 @@ common::Error UserInfo::DoDeSerialize(json_object* serialized) {
   return common::Error();
 }
 
-bool UserInfo::HaveDevice(fastotv::device_id_t dev) const {
+common::Error UserInfo::FindDevice(fastotv::device_id_t id, DeviceInfo* dev) const {
+  if (!dev || id.empty()) {
+    return common::make_error_inval();
+  }
+
   for (size_t i = 0; i < devices_.size(); ++i) {
-    if (dev == devices_[i]) {
-      return true;
+    if (id == devices_[i].GetDeviceID()) {
+      *dev = devices_[i];
+      return common::Error();
     }
   }
 
-  return false;
+  return common::make_error("Device not found");
 }
 
 UserInfo::devices_t UserInfo::GetDevices() const {

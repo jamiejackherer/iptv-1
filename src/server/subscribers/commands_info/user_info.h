@@ -30,9 +30,27 @@ namespace commands_info {
 
 enum Status { NO_ACTIVE = 0, ACTIVE = 1, BANNED = 2 };
 
+class DeviceInfo : public common::serializer::JsonSerializer<DeviceInfo> {
+ public:
+  DeviceInfo();
+  explicit DeviceInfo(fastotv::device_id_t did, size_t connections);
+
+  bool IsValid() const;
+  fastotv::device_id_t GetDeviceID() const;
+  size_t GetConnections() const;
+
+ protected:
+  common::Error DoDeSerialize(json_object* serialized) override;
+  common::Error SerializeFields(json_object* deserialized) const override;
+
+ private:
+  fastotv::device_id_t id_;
+  size_t connections_;
+};
+
 class UserInfo : public common::serializer::JsonSerializer<UserInfo> {
  public:
-  typedef std::vector<fastotv::device_id_t> devices_t;
+  typedef std::vector<DeviceInfo> devices_t;
 
   UserInfo();
   explicit UserInfo(const fastotv::user_id_t& uid,
@@ -45,7 +63,7 @@ class UserInfo : public common::serializer::JsonSerializer<UserInfo> {
   bool IsValid() const;
   bool IsBanned() const;
 
-  bool HaveDevice(fastotv::device_id_t dev) const;
+  common::Error FindDevice(fastotv::device_id_t id, DeviceInfo* dev) const;
   devices_t GetDevices() const;
   fastotv::login_t GetLogin() const;
   std::string GetPassword() const;

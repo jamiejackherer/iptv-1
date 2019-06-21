@@ -183,20 +183,22 @@ common::Error SubscribersHandler::UnRegisterInnerConnectionByHost(ProtocoledSubs
   return common::Error();
 }
 
-ProtocoledSubscriberClient* SubscribersHandler::FindInnerConnectionByUser(const rpc::UserRpcInfo& user) const {
+std::vector<ProtocoledSubscriberClient*> SubscribersHandler::FindInnerConnectionsByUser(
+    const rpc::UserRpcInfo& user) const {
   const auto hs = connections_.find(user.GetUserID());
   if (hs == connections_.end()) {
-    return nullptr;
+    return std::vector<ProtocoledSubscriberClient*>();
   }
 
+  std::vector<ProtocoledSubscriberClient*> result;
   auto devices = hs->second;
   for (client_t* connected_device : devices) {
     auto uinf = connected_device->GetServerHostInfo();
     if (uinf.MakeUserRpc() == user) {
-      return connected_device;
+      result.push_back(connected_device);
     }
   }
-  return nullptr;
+  return result;
 }
 
 size_t SubscribersHandler::GetOnlineUserByStreamID(common::libev::IoLoop* server, fastotv::stream_id sid) const {
@@ -248,14 +250,6 @@ common::ErrnoError SubscribersHandler::HandleRequestClientActivate(ProtocoledSub
       return common::make_errno_error(error_str, EINVAL);
     }
 
-    const fastotv::device_id_t dev = uauth.GetDeviceID();
-    if (!registered_user.HaveDevice(dev)) {
-      const std::string error_str = "Unknown device reject";
-      fastotv::protocol::response_t resp = ActivateResponseFail(req->id, error_str);
-      client->WriteResponce(resp);
-      return common::make_errno_error(error_str, EINVAL);
-    }
-
     if (registered_user.IsBanned()) {
       const std::string error_str = "Banned user";
       fastotv::protocol::response_t resp = ActivateResponseFail(req->id, error_str);
@@ -263,11 +257,21 @@ common::ErrnoError SubscribersHandler::HandleRequestClientActivate(ProtocoledSub
       return common::make_errno_error(error_str, EINVAL);
     }
 
+    const fastotv::device_id_t did = uauth.GetDeviceID();
+    commands_info::DeviceInfo dev;
+    common::Error dev_find = registered_user.FindDevice(did, &dev);
+    if (dev_find) {
+      const std::string error_str = dev_find->GetDescription();
+      fastotv::protocol::response_t resp = ActivateResponseFail(req->id, error_str);
+      client->WriteResponce(resp);
+      return common::make_errno_error(error_str, EINVAL);
+    }
+
     const ServerAuthInfo server_user_auth(registered_user.GetUserID(), uauth);
     const rpc::UserRpcInfo user_rpc = server_user_auth.MakeUserRpc();
-    ProtocoledSubscriberClient* fclient = FindInnerConnectionByUser(user_rpc);
-    if (fclient) {
-      const std::string error_str = "Double connection reject";
+    auto fconnections = FindInnerConnectionsByUser(user_rpc);
+    if (fconnections.size() >= dev.GetConnections()) {
+      const std::string error_str = "Limit connection reject";
       fastotv::protocol::response_t resp = ActivateResponseFail(req->id, error_str);
       client->WriteResponce(resp);
       return common::make_errno_error(error_str, EINVAL);
@@ -281,7 +285,7 @@ common::ErrnoError SubscribersHandler::HandleRequestClientActivate(ProtocoledSub
 
     common::Error err = RegisterInnerConnectionByHost(server_user_auth, client);
     CHECK(!err) << "Register inner connection error: " << err->GetDescription();
-    INFO_LOG() << "Welcome registered user: " << uauth.GetLogin();
+    INFO_LOG() << "Welcome registered user: " << uauth.GetLogin() << ", connection: " << fconnections.size() + 1;
     return common::ErrnoError();
   }
 
