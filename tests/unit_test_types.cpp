@@ -40,7 +40,7 @@ TEST(StreamStructInfo, SerializeDeSerialize) {
   ASSERT_FALSE(err);
   // ASSERT_EQ(sinf.GetStreamStruct(), sinf2.GetStreamStruct());
   ASSERT_EQ(sinf.GetCpuLoad(), sinf2.GetCpuLoad());
-  ASSERT_EQ(sinf.GetRss(), sinf2.GetRss());
+  ASSERT_EQ(sinf.GetRssBytes(), sinf2.GetRssBytes());
   ASSERT_EQ(sinf.GetTimestamp(), sinf2.GetTimestamp());
 
   json_object_put(serialized);

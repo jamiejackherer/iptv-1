@@ -43,10 +43,6 @@ TEST(InputUri, ConvertFromString) {
   ASSERT_EQ(uri.GetID(), 1);
   common::uri::Url ro(RTMP_INPUT);
   ASSERT_EQ(uri.GetInput(), ro);
-  ASSERT_EQ(uri.GetMute(), false);
-  ASSERT_EQ(uri.GetRelayVideo(), true);
-  ASSERT_EQ(uri.GetRelayAudio(), false);
-
   const std::string file_uri_json =
       "{ \"id\": 2, \"uri\": \"" FILE_INPUT
       "\", \"volume\": 1.0, \"mute\": false, \"relay_video\": false, \"relay_audio\": true}";
@@ -56,9 +52,6 @@ TEST(InputUri, ConvertFromString) {
   ASSERT_EQ(file_uri.GetID(), 2);
   common::uri::Url file_ro(FILE_INPUT);
   ASSERT_EQ(file_uri.GetInput(), file_ro);
-  ASSERT_EQ(file_uri.GetMute(), false);
-  ASSERT_EQ(file_uri.GetRelayVideo(), false);
-  ASSERT_EQ(file_uri.GetRelayAudio(), true);
 
   const std::string dev_uri_json =
       "{ \"id\": 2, \"uri\": \"" DEVICE_INPUT
@@ -73,7 +66,4 @@ TEST(InputUri, ConvertFromString) {
   common::uri::Upath dpath = dev_ro.GetPath();
   ASSERT_EQ(dpath.GetPath(), DEVICE_VIDEO);
   ASSERT_EQ(dpath.GetQuery(), DEVICE_AUDIO);
-  ASSERT_EQ(dev_uri.GetMute(), true);
-  ASSERT_EQ(dev_uri.GetRelayVideo(), true);
-  ASSERT_EQ(dev_uri.GetRelayAudio(), true);
 }
